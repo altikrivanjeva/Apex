@@ -1,4 +1,5 @@
 
+import ProductsCRUD from '../components/ProductsCRUD';
 import logo from '../assets/logo.png';
 import banner1 from '../assets/banner1.jpg';
 import { Geist, Geist_Mono } from "next/font/google";
@@ -39,9 +40,16 @@ export default function Home() {
           height={200}
           className="mb-8"
         />
-        <p className="text-lg text-gray-600">
+        <p className="text-lg text-gray-600 mb-8">
           Your next-generation web store.
         </p>
+
+  {/* CRUD for Products with React */}
+  {/* --- React CRUD for Products --- */}
+  {/** This block uses React hooks for CRUD */}
+  {/* Import React hooks at the top if not already: */}
+  {/* import React, { useState, useEffect } from 'react'; */}
+    <ProductsCRUD />
       </main>
       <Footer />
     </div>
