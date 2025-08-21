@@ -1,0 +1,49 @@
+
+import logo from '../assets/logo.png';
+import banner1 from '../assets/banner1.jpg';
+import { Geist, Geist_Mono } from "next/font/google";
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export default function Home() {
+  return (
+    <div className={`${geistSans.variable} ${geistMono.variable} font-sans min-h-screen flex flex-col`}>
+      <Header />
+      <div
+        className="w-full h-[300px] relative flex items-center justify-center mb-8"
+        style={{
+          backgroundImage: `url(${banner1.src})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+  <div className="absolute inset-0 bg-black/40 z-0" />
+  <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-white md:text-5xl lg:text-6xl z-10 relative" style={{ color: '#fff', fontFamily: 'Geist, Arial, Helvetica, sans-serif', letterSpacing: '0.03em' }}>Welcome to APEX</h1>
+
+      </div>
+      <main className="flex-1 flex flex-col items-center justify-center">
+        <img
+          src={logo.src}
+          alt="APEX Logo"
+          width={200}
+          height={200}
+          className="mb-8"
+        />
+        <p className="text-lg text-gray-600">
+          Your next-generation web store.
+        </p>
+      </main>
+      <Footer />
+    </div>
+  );
+}
