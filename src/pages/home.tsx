@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   return (
-    <div className={`${geistSans.variable} ${geistMono.variable} font-sans min-h-screen flex flex-col`}>
+    <div className={`${geistSans.variable} ${geistMono.variable} font-sans min-h-screen flex flex-col`} style={{ background: '#dfdfdfff' }}>
       <Header />
       <div
         className="w-full h-[300px] relative flex items-center justify-center mb-8"
@@ -44,11 +44,7 @@ export default function Home() {
           Your next-generation web store.
         </p>
 
-  {/* CRUD for Products with React */}
-  {/* --- React CRUD for Products --- */}
-  {/** This block uses React hooks for CRUD */}
-  {/* Import React hooks at the top if not already: */}
-  {/* import React, { useState, useEffect } from 'react'; */}
+
     <ProductsCRUD />
       </main>
       <Footer />
