@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useRouter } from 'next/router'; // <-- Add this line
+import auth from 'auth'; // <-- Add this line
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,6 +51,15 @@ export default function Home() {
         >
           Contact Us
         </button>
+
+          <button
+          className="mb-8 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          onClick={() => router.push('/auth')}
+        >
+          Register/Login
+        </button>
+
+
         <ProductsCRUD />
       </main>
       <Footer />

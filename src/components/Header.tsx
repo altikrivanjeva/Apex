@@ -4,11 +4,14 @@ import logo1 from '../assets/logo1.png';
 
 const Header: React.FC = () => (
   <header className="w-full flex items-stretch shadow" style={{ background: '#e6e6e6ff', minHeight: '64px' }}>
-    <img
+    
+    <a href="http://localhost:3000">
+     <img
       src={logo1.src}
       alt="APEX Logo"
       className="h-25 w-auto object-contain mx-10 -my-2"
     />
+    </a>
   <nav className="flex items-stretch justify-center ">
         <div className="relative inline-block group " tabIndex={0}>
           <button
