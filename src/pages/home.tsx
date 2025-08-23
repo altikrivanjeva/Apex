@@ -1,10 +1,10 @@
-
 import ProductsCRUD from '../components/ProductsCRUD';
 import logo from '../assets/logo.png';
 import banner1 from '../assets/banner1.jpg';
 import { Geist, Geist_Mono } from "next/font/google";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useRouter } from 'next/router'; // <-- Add this line
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export default function Home() {
+  const router = useRouter(); // <-- Add this line
+
   return (
     <div className={`${geistSans.variable} ${geistMono.variable} font-sans min-h-screen flex flex-col`} style={{ background: '#dfdfdfff' }}>
       <Header />
@@ -28,9 +30,8 @@ export default function Home() {
           backgroundPosition: 'center',
         }}
       >
-  <div className="absolute inset-0 bg-black/40 z-0" />
-  <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-white md:text-5xl lg:text-6xl z-10 relative" style={{ color: '#fff', fontFamily: 'Geist, Arial, Helvetica, sans-serif', letterSpacing: '0.03em' }}>Welcome to APEX</h1>
-
+        <div className="absolute inset-0 bg-black/40 z-0" />
+        <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-white md:text-5xl lg:text-6xl z-10 relative" style={{ color: '#fff', fontFamily: 'Geist, Arial, Helvetica, sans-serif', letterSpacing: '0.03em' }}>Welcome to APEX</h1>
       </div>
       <main className="flex-1 flex flex-col items-center justify-center">
         <img
@@ -43,9 +44,13 @@ export default function Home() {
         <p className="text-lg text-gray-600 mb-8">
           Your next-generation web store.
         </p>
-
-
-    <ProductsCRUD />
+        <button
+          className="mb-8 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          onClick={() => router.push('/contact')}
+        >
+          Contact Us
+        </button>
+        <ProductsCRUD />
       </main>
       <Footer />
     </div>
