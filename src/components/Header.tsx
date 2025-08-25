@@ -23,31 +23,43 @@ const Header: React.FC<HeaderProps> = ({ cartCount = 0, favoritesCount = 0 }) =>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-2">
-          {/* Dropdown for Products */}
-          <div className="relative group">
-            <button
-              type="button"
-              tabIndex={0}
-              className="flex items-center px-4 py-2 text-base font-medium text-gray-700 hover:bg-red-600 hover:text-white rounded-xl transition"
-            >
-              Produkte
-              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" className="ml-2 w-5 h-5 text-gray-600 group-hover:text-white">
-                <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" fillRule="evenodd" />
-              </svg>
-            </button>
-            <div className="absolute left-0 mt-2 w-56 rounded bg-gray-900 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-lg">
-              <div className="py-1">
-                <Link href="/products/protein" className="block px-4 py-2 text-base text-gray-200 hover:text-red-500">Proteina</Link>
-                <Link href="/products/mass" className="block px-4 py-2 text-base text-gray-200 hover:text-red-500">Mass Gainer</Link>
-                <Link href="/products/pre-workout" className="block px-4 py-2 text-base text-gray-200 hover:text-red-500">Pre Workout</Link>
-              </div>
-            </div>
-          </div>
-          <Link href="/about" className="px-4 py-2 text-base font-medium text-gray-700 hover:bg-red-600 hover:text-white rounded-xl transition">Rreth Nesh</Link>
-          <Link href="/contact" className="px-4 py-2 text-base font-medium text-gray-700 hover:bg-red-600 hover:text-white rounded-xl transition">Kontakt</Link>
-          <Link href="/dashboard" className="px-4 py-2 text-base font-medium text-gray-700 hover:bg-red-600 hover:text-white rounded-xl transition">Dashboard</Link>
-          <Link href="/admin" className="px-4 py-2 text-base font-medium text-gray-700 hover:bg-red-600 hover:text-white rounded-xl transition">Admin Panel</Link>
+        <nav>
+          <ul className="flex gap-8 items-center font-extrabold uppercase"
+              style={{
+                fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                letterSpacing: '2px',
+              }}>
+            <li>
+              <a href="/" className="hover:text-blue-600">Ballina</a>
+            </li>
+            <li className="relative group">
+              <a href="/products" className="hover:text-blue-600">Produktet</a>
+              <ul className="absolute left-0 mt-2 bg-white shadow-lg rounded hidden group-hover:block min-w-[180px] z-10 font-normal"
+                  style={{
+                    fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                    letterSpacing: '1px',
+                  }}>
+                <li>
+                  <a href="/products/whey" className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-700">Whey Protein</a>
+                </li>
+                <li>
+                  <a href="/products/preworkout" className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-700">Pre Workout</a>
+                </li>
+                <li>
+                  <a href="/products/aminoacids" className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-700">Amino Acidet</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a href="/about" className="hover:text-blue-600">Rreth Nesh</a>
+            </li>
+            <li>
+              <a href="/blog" className="hover:text-blue-600">Blog</a>
+            </li>
+            <li>
+              <a href="/contact" className="hover:text-blue-600">Kontakti</a>
+            </li>
+          </ul>
         </nav>
 
         {/* Search Bar */}
