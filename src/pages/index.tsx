@@ -418,6 +418,13 @@ export default function Home() {
 
       {/* Simple Footer */}
       <Footer />
+
+      {/* Extra: Motivational Message for the end */}
+      <div className="w-full py-8 bg-[#181c24] text-center text-white text-lg font-bold tracking-wide" style={{fontFamily: 'Montserrat, Arial, Helvetica, sans-serif'}}>
+        <span>
+          Faleminderit që vizituat Apex! Suksese në rrugëtimin tuaj sportiv dhe mos harroni: <span className="text-orange-400">#StrongerEveryDay</span>
+        </span>
+      </div>
     </div>
   );
 }

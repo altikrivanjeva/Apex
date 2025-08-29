@@ -2,6 +2,10 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useState, useEffect } from 'react';
 
+// Import fonts globally for consistency
+const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
+const fontOpenSans = { fontFamily: 'Open Sans, Arial, Helvetica, sans-serif' };
+
 const slides = [
   {
     img: 'https://images.unsplash.com/photo-1704650311481-a3cd10c5b3fb?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -56,14 +60,24 @@ export default function About() {
   }, [current]);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #0f2027 0%, #2c5364 100%)' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #f5f5f5 0%, #eaf0fa 100%)' }}>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:800,700,400&display=swap');
+        @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,500,600&display=swap');
+      `}</style>
       <Header />
       {/* Hero Section */}
-      <section className="w-full flex flex-col items-center justify-center py-16" style={{ background: 'rgba(44, 83, 100, 0.95)' }}>
-        <h1 className="text-5xl md:text-6xl font-extrabold mb-4 text-white tracking-tight drop-shadow-lg" style={{ fontFamily: 'Oswald, Arial, Helvetica, sans-serif' }}>
+      <section className="w-full flex flex-col items-center justify-center py-16" style={{ background: 'rgba(236, 245, 255, 0.95)' }}>
+        <h1
+          className="text-5xl md:text-6xl font-extrabold mb-4 text-blue-900 tracking-tight drop-shadow-lg uppercase"
+          style={{ ...fontMontserrat, letterSpacing: '2px' }}
+        >
           About Apex Supplements
         </h1>
-        <p className="mb-8 text-xl text-blue-200 font-medium text-center max-w-2xl drop-shadow">
+        <p
+          className="mb-8 text-xl text-blue-700 font-medium text-center max-w-2xl drop-shadow"
+          style={fontOpenSans}
+        >
           Fuel your ambition. Transform your results. Discover the Apex difference.
         </p>
         {/* Slideshow */}
@@ -83,7 +97,7 @@ export default function About() {
                 boxShadow: '0 2px 12px 0 rgba(44,83,100,0.12)',
                 minWidth: '220px',
               }}>
-              <span className="text-blue-900 text-lg md:text-xl font-bold drop-shadow text-center block">{slides[current].caption}</span>
+              <span className="text-blue-900 text-lg md:text-xl font-bold drop-shadow text-center block" style={fontMontserrat}>{slides[current].caption}</span>
             </div>
           </div>
           <div className="flex justify-center mt-6 gap-4">
@@ -111,23 +125,23 @@ export default function About() {
                 src={section.img}
                 alt={section.title}
                 className="rounded-2xl shadow-xl w-full h-64 object-cover"
-                style={{ maxWidth: '400px', filter: 'brightness(0.95)' }}
+                style={{ maxWidth: '400px', filter: 'brightness(0.97)' }}
               />
             </div>
             <div className="md:w-1/2 w-full mt-8 md:mt-0 px-6">
-              <h2 className="text-3xl font-bold text-blue-900 mb-4" style={{ fontFamily: 'Oswald, Arial, Helvetica, sans-serif' }}>
+              <h2 className="text-3xl font-bold text-blue-900 mb-4 uppercase" style={{ ...fontMontserrat, letterSpacing: '1px' }}>
                 {section.title}
               </h2>
-              <p className="text-lg text-gray-700 font-medium">{section.text}</p>
+              <p className="text-lg text-gray-700 font-medium" style={fontOpenSans}>{section.text}</p>
             </div>
           </section>
         ))}
         {/* Why Choose Us */}
-        <section className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-xl p-8 max-w-3xl mx-auto border border-blue-400/30 text-center">
-          <h2 className="text-2xl font-bold text-blue-900 mb-4" style={{ fontFamily: 'Oswald, Arial, Helvetica, sans-serif' }}>
+        <section className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 max-w-3xl mx-auto border border-blue-400/30 text-center">
+          <h2 className="text-2xl font-bold text-blue-900 mb-4 uppercase" style={{ ...fontMontserrat, letterSpacing: '1px' }}>
             Why Choose Us?
           </h2>
-          <ul className="text-lg text-gray-700 font-medium space-y-2">
+          <ul className="text-lg text-gray-700 font-medium space-y-2" style={fontOpenSans}>
             <li>✔️ Science-backed formulas</li>
             <li>✔️ Transparent ingredient sourcing</li>
             <li>✔️ Trusted by athletes and trainers</li>
