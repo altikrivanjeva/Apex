@@ -136,18 +136,6 @@ export default function About() {
             </div>
           </section>
         ))}
-        {/* Why Choose Us */}
-        <section className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 max-w-3xl mx-auto border border-blue-400/30 text-center">
-          <h2 className="text-2xl font-bold text-blue-900 mb-4 uppercase" style={{ ...fontMontserrat, letterSpacing: '1px' }}>
-            Why Choose Us?
-          </h2>
-          <ul className="text-lg text-gray-700 font-medium space-y-2" style={fontOpenSans}>
-            <li>✔️ Science-backed formulas</li>
-            <li>✔️ Transparent ingredient sourcing</li>
-            <li>✔️ Trusted by athletes and trainers</li>
-            <li>✔️ Fast, friendly customer support</li>
-          </ul>
-        </section>
       </main>
       <Footer />
     </div>

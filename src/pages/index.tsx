@@ -34,7 +34,7 @@ export default function Home() {
                 letterSpacing: '2px',
               }}
             >
-              SHTESA USHQIMORE
+              NUTRITIONAL SUPPLEMENTS
             </h1>
             <p
               className="text-sm text-gray-700 mb-8"
@@ -43,7 +43,7 @@ export default function Home() {
                 fontWeight: 400,
               }}
             >
-              Apex është protein shop me lokacion në Kosovë dhe veprimtari edhe në Shqipëri. Ne ofrojmë shtesa ushqimore për të gjithë sportistët. Kompania jonë ka synim kualitetin e lartë dhe mbështetjen e sportistëve. Apex ka ekskluzivitet për brendet më të mira në tregun e Kosovës dhe Shqipërisë.
+              Apex is a protein shop located in Kosovo and operating also in Albania. We offer nutritional supplements for all athletes. Our company aims for high quality and supports athletes. Apex has exclusivity for the best brands in the Kosovo and Albanian market.
             </p>
             <div className="flex gap-4">
               <button
@@ -55,10 +55,15 @@ export default function Home() {
                   fontStyle: 'italic',
                   borderWidth: '2px',
                 }}
+                onClick={() => {
+                  const dealsSection = document.getElementById('weekly-deals');
+                  if (dealsSection) {
+                    dealsSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
               >
-                NE ZBRITJE
+                ON SALE
               </button>
-              {/* PRODUKTET button removed */}
             </div>
           </div>
           {/* Right: Product Image */}
@@ -140,7 +145,10 @@ export default function Home() {
           </div>
         </section>
         {/* Products Section */}
-        <section className="w-full max-w-7xl mx-auto px-4 py-16">
+        <section
+          id="weekly-deals"
+          className="w-full max-w-7xl mx-auto px-4 py-16"
+        >
           <h2
             className="text-3xl md:text-4xl font-extrabold uppercase mb-10 text-gray-900"
             style={{
@@ -148,7 +156,7 @@ export default function Home() {
               letterSpacing: '2px',
             }}
           >
-            PRODUKTET TONA
+            Weekly Deals!!
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 mb-8">
             {[
@@ -237,7 +245,7 @@ export default function Home() {
             letterSpacing: '2px',
           }}
         >
-          Weekly Deals
+         
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
           {/*
@@ -268,15 +276,17 @@ export default function Home() {
 
       {/* Why Choose Us Section */}
       <section className="w-full max-w-5xl mx-auto px-4 py-16" id="why-choose-us">
-        <h2
-          className="text-3xl font-extrabold uppercase mb-8 text-gray-900 text-center"
-          style={{
-            fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-            letterSpacing: '2px',
-          }}
-        >
-          Why Choose Us?
-        </h2>
+        <a href="/why-choose-us">
+          <h2
+            className="text-3xl font-extrabold uppercase mb-8 text-gray-900 text-center cursor-pointer hover:text-orange-500 transition"
+            style={{
+              fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+              letterSpacing: '2px',
+            }}
+          >
+            Why Choose Us?
+          </h2>
+        </a>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {/*
             {
@@ -322,15 +332,17 @@ export default function Home() {
 
       {/* Customer Reviews Section */}
       <section className="w-full max-w-5xl mx-auto px-4 py-16" id="reviews">
-        <h2
-          className="text-3xl font-extrabold uppercase mb-8 text-gray-900 text-center"
-          style={{
-            fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-            letterSpacing: '2px',
-          }}
-        >
-          Customer Reviews
-        </h2>
+        <a href="/customer-reviews">
+          <h2
+            className="text-3xl font-extrabold uppercase mb-8 text-gray-900 text-center cursor-pointer hover:text-orange-500 transition"
+            style={{
+              fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+              letterSpacing: '2px',
+            }}
+          >
+            Customer Reviews
+          </h2>
+        </a>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/*
             {
@@ -354,15 +366,17 @@ export default function Home() {
 
       {/* Fitness Tips Blog Preview Section */}
       <section className="w-full max-w-5xl mx-auto px-4 py-16" id="fitness-tips">
-        <h2
-          className="text-3xl font-extrabold uppercase mb-8 text-gray-900 text-center"
-          style={{
-            fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-            letterSpacing: '2px',
-          }}
-        >
-          Fitness Tips
-        </h2>
+        <a href="/fitness-tips">
+          <h2
+            className="text-3xl font-extrabold uppercase mb-8 text-gray-900 text-center cursor-pointer hover:text-orange-500 transition"
+            style={{
+              fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+              letterSpacing: '2px',
+            }}
+          >
+            Fitness Tips
+          </h2>
+        </a>
         <div className="flex flex-wrap gap-8 justify-center">
           {/*
             {
@@ -416,15 +430,10 @@ export default function Home() {
         </a>
       </section>
 
-      {/* Simple Footer */}
+     
       <Footer />
 
-      {/* Extra: Motivational Message for the end */}
-      <div className="w-full py-8 bg-[#181c24] text-center text-white text-lg font-bold tracking-wide" style={{fontFamily: 'Montserrat, Arial, Helvetica, sans-serif'}}>
-        <span>
-          Faleminderit që vizituat Apex! Suksese në rrugëtimin tuaj sportiv dhe mos harroni: <span className="text-orange-400">#StrongerEveryDay</span>
-        </span>
-      </div>
+      
     </div>
   );
 }
