@@ -48,7 +48,7 @@ export default function Orders() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50 via-blue-50 to-white">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50 via-blue-50 to-white text-blue-900">
       <Header cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)} />
       <main className="flex-1 flex flex-col items-center justify-center py-16 px-4">
         <section className="w-full max-w-xl mx-auto mb-10 px-6 py-8 bg-white/90 rounded-2xl shadow-2xl border border-blue-100 flex flex-col items-center">
