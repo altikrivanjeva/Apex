@@ -1,6 +1,7 @@
 // This file renders the Home page from home.tsx
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -140,8 +141,6 @@ export default function Home() {
             >
               APEX
             </span>
-            {/* Remove the button below */}
-            {/* <a ...>Shiko të gjitha produktet</a> */}
           </div>
         </section>
         {/* Products Section */}
@@ -159,63 +158,114 @@ export default function Home() {
             Weekly Deals!!
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 mb-8">
-            {[
-              {
-                name: 'Whey Gold Protein',
-                img: 'https://a1protein.com/wp-content/uploads/2021/12/KL-Gold-Whey-Protein-2-kg.jpg',
-                price: '€39.99',
-              },
-              {
-                name: 'C4 Pre Workout',
-                img: 'https://www.preworkout.org/wp-content/uploads/2022/05/C4-Preworkout-720x760.jpg',
-                price: '€29.99',
-              },
-              {
-                name: 'Amino Acidet',
-                img: 'https://images.bauerhosting.com/affiliates/sites/9/2024/08/amino-5.jpg?auto=format&w=480&q=80',
-                price: '€19.99',
-              },
-            ].map((product) => (
-              <div
-                key={product.name}
-                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100"
+            <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100">
+              <img
+                src="https://a1protein.com/wp-content/uploads/2021/12/KL-Gold-Whey-Protein-2-kg.jpg"
+                alt="Whey Gold Protein"
+                className="w-32 h-32 object-contain rounded-xl mb-4"
+              />
+              <h3
+                className="text-xl font-extrabold uppercase text-gray-900 mb-2 text-center"
+                style={{
+                  fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                  letterSpacing: '1px',
+                }}
               >
-                <img
-                  src={product.img}
-                  alt={product.name}
-                  className="w-32 h-32 object-contain rounded-xl mb-4"
-                />
-                <h3
-                  className="text-xl font-extrabold uppercase text-gray-900 mb-2 text-center"
-                  style={{
-                    fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-                    letterSpacing: '1px',
-                  }}
-                >
-                  {product.name}
-                </h3>
-                <div
-                  className="text-lg font-bold text-blue-700 mb-4"
-                  style={{
-                    fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-                  }}
-                >
-                  {product.price}
-                </div>
-                <button
-                  className="px-5 py-2 bg-black text-white font-extrabold italic rounded-none shadow hover:bg-blue-900 transition text-base uppercase"
-                  style={{
-                    fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-                    letterSpacing: '1px',
-                    fontWeight: 800,
-                    fontStyle: 'italic',
-                    borderWidth: '2px',
-                  }}
-                >
-                  Add to Cart
-                </button>
+                Whey Gold Protein
+              </h3>
+              <div
+                className="text-lg font-bold text-blue-700 mb-4"
+                style={{
+                  fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                }}
+              >
+                €39.99
               </div>
-            ))}
+              <button
+                className="px-5 py-2 bg-black text-white font-extrabold italic rounded-none shadow hover:bg-blue-900 transition text-base uppercase"
+                style={{
+                  fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                  letterSpacing: '1px',
+                  fontWeight: 800,
+                  fontStyle: 'italic',
+                  borderWidth: '2px',
+                }}
+              >
+                Add to Basket
+              </button>
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100">
+              <img
+                src="https://www.preworkout.org/wp-content/uploads/2022/05/C4-Preworkout-720x760.jpg"
+                alt="C4 Pre Workout"
+                className="w-32 h-32 object-contain rounded-xl mb-4"
+              />
+              <h3
+                className="text-xl font-extrabold uppercase text-gray-900 mb-2 text-center"
+                style={{
+                  fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                  letterSpacing: '1px',
+                }}
+              >
+                C4 Pre Workout
+              </h3>
+              <div
+                className="text-lg font-bold text-blue-700 mb-4"
+                style={{
+                  fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                }}
+              >
+                €29.99
+              </div>
+              <button
+                className="px-5 py-2 bg-black text-white font-extrabold italic rounded-none shadow hover:bg-blue-900 transition text-base uppercase"
+                style={{
+                  fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                  letterSpacing: '1px',
+                  fontWeight: 800,
+                  fontStyle: 'italic',
+                  borderWidth: '2px',
+                }}
+              >
+                Add to Basket
+              </button>
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100">
+              <img
+                src="https://images.bauerhosting.com/affiliates/sites/9/2024/08/amino-5.jpg?auto=format&w=480&q=80"
+                alt="Amino Acidet"
+                className="w-32 h-32 object-contain rounded-xl mb-4"
+              />
+              <h3
+                className="text-xl font-extrabold uppercase text-gray-900 mb-2 text-center"
+                style={{
+                  fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                  letterSpacing: '1px',
+                }}
+              >
+                Amino Acidet
+              </h3>
+              <div
+                className="text-lg font-bold text-blue-700 mb-4"
+                style={{
+                  fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                }}
+              >
+                €19.99
+              </div>
+              <button
+                className="px-5 py-2 bg-black text-white font-extrabold italic rounded-none shadow hover:bg-blue-900 transition text-base uppercase"
+                style={{
+                  fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+                  letterSpacing: '1px',
+                  fontWeight: 800,
+                  fontStyle: 'italic',
+                  borderWidth: '2px',
+                }}
+              >
+                Add to Basket
+              </button>
+            </div>
           </div>
           <div className="flex justify-center">
             <a
@@ -234,206 +284,58 @@ export default function Home() {
             </a>
           </div>
         </section>
+        {/* Simple navigation links as text, centered and spaced, now in black */}
+        <section className="w-full max-w-3xl mx-auto my-24 flex flex-col gap-16 items-center">
+          <Link
+            href="/why-choose-us"
+            className="text-2xl md:text-3xl font-extrabold text-black hover:text-orange-500 transition uppercase tracking-wide text-center"
+            style={{ fontFamily: 'Montserrat, Arial, Helvetica, sans-serif', letterSpacing: '2px' }}
+          >
+            WHY CHOOSE US?
+          </Link>
+          <Link
+            href="/customer-reviews"
+            className="text-2xl md:text-3xl font-extrabold text-black hover:text-orange-500 transition uppercase tracking-wide text-center"
+            style={{ fontFamily: 'Montserrat, Arial, Helvetica, sans-serif', letterSpacing: '2px' }}
+          >
+            CUSTOMER REVIEWS
+          </Link>
+          <Link
+            href="/fitness-tips"
+            className="text-2xl md:text-3xl font-extrabold text-black hover:text-orange-500 transition uppercase tracking-wide text-center"
+            style={{ fontFamily: 'Montserrat, Arial, Helvetica, sans-serif', letterSpacing: '2px' }}
+          >
+            FITNESS TIPS
+          </Link>
+        </section>
+        {/* Final Call to Action Section */}
+        <section className="w-full py-16 flex flex-col items-center justify-center bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500">
+          <h2
+            className="text-3xl md:text-4xl font-extrabold uppercase text-white mb-8 text-center"
+            style={{
+              fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+              letterSpacing: '2px',
+            }}
+          >
+            Shop Now and Start Your Fitness Journey!
+          </h2>
+          <a
+            href="/products"
+            className="px-10 py-4 bg-black text-white font-extrabold italic rounded-none shadow hover:bg-gray-900 transition text-lg uppercase"
+            style={{
+              fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
+              letterSpacing: '1px',
+              fontWeight: 800,
+              fontStyle: 'italic',
+              borderWidth: '2px',
+              display: 'inline-block',
+            }}
+          >
+            Shop Now
+          </a>
+        </section>
       </main>
-
-      {/* Weekly Deals Section */}
-      <section className="w-full max-w-7xl mx-auto px-4 py-16">
-        <h2
-          className="text-3xl md:text-4xl font-extrabold uppercase mb-10 text-gray-900"
-          style={{
-            fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-            letterSpacing: '2px',
-          }}
-        >
-         
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-          {/*
-            {
-              name: 'Creatine Monohydrate',
-              img: 'https://vitafit-ks.com/wp-content/webp-express/webp-images/uploads/2025/02/Untitled-2.png.webp',
-              price: '€19.99',
-              deal: '20% OFF',
-              link: '/products/creatine',
-            },
-            {
-              name: 'BCAA Complex',
-              img: 'https://www.trufit.eu/media/adjconfigurable/1100/copyright-www.trufit.eu-1100-cellucor-c4-ultimate-40serv.png',
-              price: '€16.99',
-              deal: 'Best Seller',
-              link: '/products/bcaa',
-            },
-            {
-              name: 'Multivitamin',
-              img: 'https://images.unsplash.com/photo-1517960413843-0aee8e2d7e58?auto=format&fit=crop&w=600&q=80',
-              price: '€11.99',
-              deal: 'Limited Time',
-              link: '/products/multivitamin',
-            },
-          */}
-        </div>
-      </section>
-
-      {/* Why Choose Us Section */}
-      <section className="w-full max-w-5xl mx-auto px-4 py-16" id="why-choose-us">
-        <a href="/why-choose-us">
-          <h2
-            className="text-3xl font-extrabold uppercase mb-8 text-gray-900 text-center cursor-pointer hover:text-orange-500 transition"
-            style={{
-              fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-              letterSpacing: '2px',
-            }}
-          >
-            Why Choose Us?
-          </h2>
-        </a>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {/*
-            {
-              icon: (
-                <svg className="mx-auto mb-3" width="32" height="32" fill="none" stroke="#ff7c1c" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 12h18M3 12l4-4m-4 4l4 4"></path></svg>
-              ),
-              label: 'Fast Shipping',
-              link: '/info/shipping',
-            },
-            {
-              icon: (
-                <svg className="mx-auto mb-3" width="32" height="32" fill="none" stroke="#ff7c1c" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
-              ),
-              label: 'Secure Payments',
-              link: '/info/payments',
-            },
-            {
-              icon: (
-                <svg className="mx-auto mb-3" width="32" height="32" fill="none" stroke="#ff7c1c" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-              ),
-              label: 'Authentic Products',
-              link: '/info/authenticity',
-            },
-            {
-              icon: (
-                <svg className="mx-auto mb-3" width="32" height="32" fill="none" stroke="#ff7c1c" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
-              ),
-              label: '24/7 Support',
-              link: '/contact',
-            },
-          */}
-        </div>
-        <style>{`
-          @keyframes fade-in {
-            0% { opacity: 0; transform: translateY(20px);}
-            100% { opacity: 1; transform: translateY(0);}
-          }
-          .animate-fade-in {
-            animation: fade-in 0.7s both;
-          }
-        `}</style>
-      </section>
-
-      {/* Customer Reviews Section */}
-      <section className="w-full max-w-5xl mx-auto px-4 py-16" id="reviews">
-        <a href="/customer-reviews">
-          <h2
-            className="text-3xl font-extrabold uppercase mb-8 text-gray-900 text-center cursor-pointer hover:text-orange-500 transition"
-            style={{
-              fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-              letterSpacing: '2px',
-            }}
-          >
-            Customer Reviews
-          </h2>
-        </a>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/*
-            {
-              name: 'Arber K.',
-              img: 'https://randomuser.me/api/portraits/men/32.jpg',
-              review: 'Produktet janë super cilësore dhe dërgesa shumë e shpejtë!',
-            },
-            {
-              name: 'Elira S.',
-              img: 'https://randomuser.me/api/portraits/women/44.jpg',
-              review: 'Jam shumë e kënaqur me shërbimin dhe suplementet që mora.',
-            },
-            {
-              name: 'Gent R.',
-              img: 'https://randomuser.me/api/portraits/men/65.jpg',
-              review: 'Apex është zgjedhja ime për çdo suplement sportiv!',
-            },
-          */}
-        </div>
-      </section>
-
-      {/* Fitness Tips Blog Preview Section */}
-      <section className="w-full max-w-5xl mx-auto px-4 py-16" id="fitness-tips">
-        <a href="/fitness-tips">
-          <h2
-            className="text-3xl font-extrabold uppercase mb-8 text-gray-900 text-center cursor-pointer hover:text-orange-500 transition"
-            style={{
-              fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-              letterSpacing: '2px',
-            }}
-          >
-            Fitness Tips
-          </h2>
-        </a>
-        <div className="flex flex-wrap gap-8 justify-center">
-          {/*
-            {
-              title: '5 Ways to Boost Your Workout',
-              text: 'Discover simple strategies to maximize your gym results and stay motivated every day.',
-              link: '/blog/boost-workout',
-            },
-            {
-              title: 'Protein: How Much Do You Need?',
-              text: 'Learn how to calculate your daily protein needs for muscle growth and recovery.',
-              link: '/blog/protein-needs',
-            },
-            {
-              title: 'Hydration for Athletes',
-              text: 'Why water and electrolytes matter for performance and how to stay hydrated.',
-              link: '/blog/hydration-athletes',
-            },
-          */}
-        </div>
-        <style>{`
-          .animate-fade-in {
-            animation: fade-in 0.7s both;
-          }
-        `}</style>
-      </section>
-
-      {/* Final Call to Action Section */}
-      <section className="w-full py-16 flex flex-col items-center justify-center bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500">
-        <h2
-          className="text-3xl md:text-4xl font-extrabold uppercase text-white mb-8 text-center"
-          style={{
-            fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-            letterSpacing: '2px',
-          }}
-        >
-          Shop Now and Start Your Fitness Journey!
-        </h2>
-        <a
-          href="/products"
-          className="px-10 py-4 bg-black text-white font-extrabold italic rounded-none shadow hover:bg-gray-900 transition text-lg uppercase"
-          style={{
-            fontFamily: 'Montserrat, Arial, Helvetica, sans-serif',
-            letterSpacing: '1px',
-            fontWeight: 800,
-            fontStyle: 'italic',
-            borderWidth: '2px',
-            display: 'inline-block',
-          }}
-        >
-          Shop Now
-        </a>
-      </section>
-
-     
       <Footer />
-
-      
     </div>
   );
 }

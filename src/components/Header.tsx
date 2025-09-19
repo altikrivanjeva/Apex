@@ -4,6 +4,8 @@ import Link from 'next/link';
 import logo1 from '../assets/logo1.png';
 import { Menu, ShoppingCart, Heart, User, LogIn, LogOut, Search } from 'lucide-react';
 
+const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
+
 interface HeaderProps {
   cartCount?: number;
   favoritesCount?: number;
@@ -62,36 +64,22 @@ const Header: React.FC<HeaderProps> = ({ cartCount = 0, favoritesCount = 0 }) =>
           </ul>
         </nav>
 
-        {/* Search Bar */}
-        <form
-          className="hidden md:flex items-center bg-gray-100 rounded-xl px-2 py-1 ml-4"
-          onSubmit={e => {
-            e.preventDefault();
-            if (search.trim()) window.location.href = `/search?q=${encodeURIComponent(search)}`;
-          }}
-        >
-          <Search className="h-5 w-5 text-gray-500 mr-1" />
-          <input
-            type="text"
-            placeholder="Search products..."
-            className="bg-transparent outline-none px-1 py-1 text-sm w-36"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </form>
-
         {/* Actions */}
         <div className="flex items-center gap-2 ml-2">
-          <Link href="/favorites" className="relative flex items-center justify-center rounded-xl border px-3 py-2 text-sm hover:bg-red-600 hover:text-white transition">
-            <Heart className="h-5 w-5" />
+          <Link href="/favorites" className="relative flex items-center">
+            <span className="mr-1">❤️</span>
             {favoritesCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">{favoritesCount}</span>
+              <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full px-2 py-0.5 font-bold" style={fontMontserrat}>
+                {favoritesCount}
+              </span>
             )}
           </Link>
-          <Link href="/cart" className="relative flex items-center justify-center rounded-xl border px-3 py-2 text-sm hover:bg-red-600 hover:text-white transition">
-            <ShoppingCart className="h-5 w-5" />
+          <Link href="/orders" className="relative flex items-center">
+            <ShoppingCart className="h-7 w-7 text-blue-900 hover:text-orange-500 transition" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">{cartCount}</span>
+              <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full px-2 py-0.5 font-bold" style={fontMontserrat}>
+                {cartCount}
+              </span>
             )}
           </Link>
           {/* Profile Dropdown */}
