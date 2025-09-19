@@ -1,21 +1,25 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut } from 'lucide-react';
+import { LogOut, Heart, ShoppingCart } from 'lucide-react';
 import logo1 from '../assets/logo1.png';
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isLoggedIn } = useAuth();
+  const favoritesCount = 0; // replace with your state if needed
+  const cartCount = 0; // optional
 
   return (
     <header className="w-full shadow sticky top-0 z-50 bg-white/90 backdrop-blur text-black">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <img src={logo1.src} alt="Logo" className="h-10 w-auto" />
           <span className="font-bold text-xl">APEX</span>
         </Link>
 
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-6 items-center">
           <Link href="/">Home</Link>
           <Link href="/products">Products</Link>
@@ -24,7 +28,28 @@ export default function Header() {
           {isLoggedIn && <Link href="/dashboard">Dashboard</Link>}
         </nav>
 
+        {/* Actions */}
         <div className="hidden md:flex gap-4 items-center">
+          {/* Favorites */}
+          <Link href="/favorites" className="relative flex items-center">
+            <Heart className="h-5 w-5 mr-1" />
+            {favoritesCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full px-2 py-0.5 font-bold">
+                {favoritesCount}
+              </span>
+            )}
+          </Link>
+
+          {/* Orders */}
+          <Link href="/orders" className="relative flex items-center">
+            <ShoppingCart className="h-5 w-5 mr-1" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full px-2 py-0.5 font-bold">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
           {!isLoggedIn ? (
             <>
               <Link href="/register" className="px-3 py-1 rounded hover:bg-gray-100">Register</Link>
@@ -32,19 +57,16 @@ export default function Header() {
             </>
           ) : (
             <Link href="/logout" className="px-3 py-1 rounded hover:bg-gray-100 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-3">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-</svg>
-
               <LogOut className="h-4 w-4 mr-1" /> Logout
             </Link>
           )}
         </div>
 
-        {/* Mobile button */}
+        {/* Mobile menu button */}
         <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>Menu</button>
       </div>
 
+      {/* Mobile Menu */}
       {mobileOpen && (
         <div className="md:hidden flex flex-col gap-2 p-4 bg-white shadow">
           <Link href="/">Home</Link>
@@ -52,6 +74,8 @@ export default function Header() {
           <Link href="/about">About</Link>
           <Link href="/contact">Contact</Link>
           {isLoggedIn && <Link href="/dashboard">Dashboard</Link>}
+          <Link href="/favorites">Favorites</Link>
+          <Link href="/orders">Orders</Link>
           {!isLoggedIn ? (
             <>
               <Link href="/register">Register</Link>
