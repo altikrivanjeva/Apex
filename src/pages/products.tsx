@@ -3,11 +3,13 @@ import Footer from '../components/Footer';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Heart } from 'lucide-react'; // npm install lucide-react
+import { ShopProduct } from '../models/ShopProduct';
 
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
 const fontOpenSans = { fontFamily: 'Open Sans, Arial, Helvetica, sans-serif' };
 
-const products = [
+// Fallback products in case database is empty
+const fallbackProducts: ShopProduct[] = [
   {
     name: 'Whey Gold Protein',
     img: 'https://th.bing.com/th/id/R.f90eb6d9c1335e9625b85fe393b17f6f?rik=9RFBJDdbHmvS4A&pid=ImgRaw&r=0',
@@ -204,10 +206,39 @@ const products = [
 
 // Shporta e thjeshtë në state
 export default function Products() {
+  const [products, setProducts] = useState<ShopProduct[]>([]);
   const [cart, setCart] = useState<{ id: number; name: string; img: string; price: string; quantity: number }[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  // Load products from database
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/shop-products');
+      if (res.ok) {
+        const dbProducts = await res.json();
+        // Combine fallback products with database products
+        const combinedProducts = [...fallbackProducts, ...dbProducts];
+        setProducts(combinedProducts);
+      } else {
+        // Only use fallback products if API fails
+        setProducts(fallbackProducts);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      // Only use fallback products if there's an error
+      setProducts(fallbackProducts);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Load cart and favorites from localStorage only on client
   useEffect(() => {
@@ -237,7 +268,7 @@ export default function Products() {
     }
   };
 
-  const addToCart = (product: typeof products[0]) => {
+  const addToCart = (product: ShopProduct) => {
     const newCart = (() => {
       const exists = cart.find((p) => p.id === product.id);
       if (exists) {
@@ -280,7 +311,7 @@ export default function Products() {
         @import url('https://fonts.googleapis.com/css?family=Montserrat:800,700,400&display=swap');
         @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,500,600&display=swap');
       `}</style>
-      <Header cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)} favoritesCount={favorites.length} />
+      <Header />
       <main className="flex-1 flex flex-col items-center py-16">
         {/* Hero Banner */}
         <section className="w-full max-w-5xl mx-auto mb-12 px-4 py-10 bg-gradient-to-r from-orange-100 via-blue-50 to-blue-100 rounded-2xl shadow-lg flex flex-col items-center">
@@ -291,6 +322,15 @@ export default function Products() {
             The best supplements for performance, muscle, and health. Choose, add to cart, and buy with one click!
           </p>
         </section>
+        
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="text-xl text-blue-900 font-bold" style={fontMontserrat}>
+              Duke ngarkuar produktet...
+            </div>
+          </div>
+        )}
         {/* Mesazhi për shtimin në shportë */}
         {message && (
           <div className="fixed top-8 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg font-bold z-50" style={fontMontserrat}>
@@ -333,7 +373,13 @@ export default function Products() {
                 ))}
               </ul>
               <div className="mt-4 text-right font-bold text-blue-900" style={fontMontserrat}>
-                Total: {cart.reduce((acc, item) => acc + item.quantity * Number(item.price.replace('€', '')), 0).toFixed(2)} €
+                Total: {cart.reduce((acc, item) => {
+                  // Handle price conversion more safely
+                  const price = typeof item.price === 'string' 
+                    ? parseFloat(item.price.replace('€', '').replace(',', '.')) 
+                    : parseFloat(String(item.price));
+                  return acc + (item.quantity * (isNaN(price) ? 0 : price));
+                }, 0).toFixed(2)} €
               </div>
               <button
                 className="mt-4 px-6 py-2 bg-orange-500 text-white font-bold uppercase rounded shadow hover:bg-orange-600 transition"
@@ -346,53 +392,70 @@ export default function Products() {
           )}
         </div>
         {/* Produktet */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 w-full max-w-7xl px-4">
-          {products.map((product) => (
-            <div key={product.id} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100 relative">
-              <button
-                onClick={() => toggleFavorite(product.id)}
-                className="absolute top-4 right-4 p-1 rounded-full bg-white shadow hover:bg-pink-100 transition"
-                aria-label="Add to favorites"
-                type="button"
-              >
-                <Heart
-                  className={`w-6 h-6 ${favorites.includes(product.id) ? 'fill-pink-500 text-pink-500' : 'text-gray-400'}`}
-                  fill={favorites.includes(product.id) ? '#ec4899' : 'none'}
+        {!loading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 w-full max-w-7xl px-4">
+            {products.map((product) => (
+              <div key={product.id} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100 relative">
+                <button
+                  onClick={() => toggleFavorite(product.id)}
+                  className="absolute top-4 right-4 p-1 rounded-full bg-white shadow hover:bg-pink-100 transition"
+                  aria-label="Add to favorites"
+                  type="button"
+                >
+                  <Heart
+                    className={`w-6 h-6 ${favorites.includes(product.id) ? 'fill-pink-500 text-pink-500' : 'text-gray-400'}`}
+                    fill={favorites.includes(product.id) ? '#ec4899' : 'none'}
+                  />
+                </button>
+                <img
+                  src={product.img}
+                  alt={product.name}
+                  className="w-32 h-32 object-contain rounded-xl mb-4"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik02NCA0OEM4OC44MzY1IDQ4IDEwOCA2Ny4xNjM1IDEwOCA5MkMxMDggMTE2LjgzNiA4OC44MzY1IDEzNiA2NCAxMzZDMzkuMTYzNSAxMzYgMjAgMTE2LjgzNiAyMCA5MkMyMCA2Ny4xNjM1IDM5LjE2MzUgNDggNjQgNDhaIiBmaWxsPSIjRTVFN0VCIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzlDQTNBRiIgZm9udC1zaXplPSIxNnB4Ij5ObyBJbWFnZTwvdGV4dD4KICA8L3N2Zz4K';
+                  }}
                 />
-              </button>
-              <img
-                src={product.img}
-                alt={product.name}
-                className="w-32 h-32 object-contain rounded-xl mb-4"
-              />
-              <h2
-                className="text-xl font-extrabold uppercase text-blue-900 mb-2 text-center"
-                style={fontMontserrat}
-              >
-                {product.name}
-              </h2>
-              <div
-                className="text-base font-bold text-gray-500 mb-1"
-                style={fontOpenSans}
-              >
-                {product.category}
+                <h2
+                  className="text-xl font-extrabold uppercase text-blue-900 mb-2 text-center"
+                  style={fontMontserrat}
+                >
+                  {product.name}
+                </h2>
+                <div
+                  className="text-base font-bold text-gray-500 mb-1"
+                  style={fontOpenSans}
+                >
+                  {product.category}
+                </div>
+                <div
+                  className="text-lg font-bold text-orange-500 mb-2"
+                  style={fontMontserrat}
+                >
+                  {product.price}
+                </div>
+                <button
+                  onClick={() => addToCart(product)}
+                  className="px-6 py-2 bg-orange-500 text-white font-bold uppercase rounded shadow hover:bg-orange-600 transition mb-2"
+                  style={fontMontserrat}
+                >
+                  Add to Cart
+                </button>
               </div>
-              <div
-                className="text-lg font-bold text-orange-500 mb-2"
-                style={fontMontserrat}
-              >
-                {product.price}
-              </div>
-              <button
-                onClick={() => addToCart(product)}
-                className="px-6 py-2 bg-orange-500 text-white font-bold uppercase rounded shadow hover:bg-orange-600 transition mb-2"
-                style={fontMontserrat}
-              >
-                Add to Cart
-              </button>
+            ))}
+          </div>
+        )}
+        
+        {/* Empty state */}
+        {!loading && products.length === 0 && (
+          <div className="text-center py-20">
+            <div className="text-2xl text-blue-900 font-bold mb-4" style={fontMontserrat}>
+              Nuk ka produkte të disponueshme
             </div>
-          ))}
-        </div>
+            <p className="text-gray-600" style={fontOpenSans}>
+              Administratori nuk ka shtuar ende produkte për shitje.
+            </p>
+          </div>
+        )}
         {/* Motivational message */}
         <div className="mt-16 text-center text-blue-900 text-xl font-bold" style={fontMontserrat}>
           Choose the supplement that fits you and start your journey to success!
