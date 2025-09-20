@@ -28,7 +28,7 @@ interface ContactMessage {
   createdAt: string;
 }
 
-type ActiveTab = 'users' | 'shop-products' | 'contact-messages';
+type ActiveTab = 'users' | 'shop-products' | 'contact-messages' | 'orders';
 
 export default function Dashboard() {
   const [users, setUsers] = useState<User[]>([]);
@@ -144,6 +144,16 @@ export default function Dashboard() {
             >
               Mesazhet e Kontaktit
             </button>
+            <button
+              onClick={() => setActiveTab('orders')}
+              className={`px-6 py-3 font-semibold transition-colors ${
+                activeTab === 'orders'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Porositë
+            </button>
           </div>
 
           {/* Tab Content */}
@@ -256,6 +266,53 @@ export default function Dashboard() {
                       <tr>
                         <td colSpan={4} className="text-center p-4 text-gray-500">
                           Nuk ka mesazhe të dërguara.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'orders' && (
+            <div>
+              <h2 className="text-2xl font-bold mb-6 text-black">Porositë</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="p-3 font-semibold text-gray-600">Emri</th>
+                      <th className="p-3 font-semibold text-gray-600">Adresa</th>
+                      <th className="p-3 font-semibold text-gray-600">Telefoni</th>
+                      <th className="p-3 font-semibold text-gray-600">Pagesa</th>
+                      <th className="p-3 font-semibold text-gray-600">Produktet</th>
+                      <th className="p-3 font-semibold text-gray-600">Data</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map((order) => (
+                      <tr key={order._id} className="border-b hover:bg-gray-50 transition text-black">
+                        <td className="p-3">{order.name}</td>
+                        <td className="p-3">{order.address}</td>
+                        <td className="p-3">{order.phone}</td>
+                        <td className="p-3">{order.payment}</td>
+                        <td className="p-3">
+                          <ul>
+                            {order.cart.map((item, idx) => (
+                              <li key={idx}>
+                                {item.name} x{item.quantity}
+                              </li>
+                            ))}
+                          </ul>
+                        </td>
+                        <td className="p-3">{new Date(order.createdAt).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                    {orders.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="text-center p-4 text-gray-500">
+                          Nuk ka porosi të bëra.
                         </td>
                       </tr>
                     )}

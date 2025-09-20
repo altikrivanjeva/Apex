@@ -1,26 +1,11 @@
-import Header from '@/components/Header';
 import Link from "next/link";
-import logo1 from "../assets/logo1.png";
+import Image from "next/image";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { LogOut, Heart, ShoppingCart } from "lucide-react";
-import { useState, useEffect } from "react";
-// File: your-project/components/Header.tsx
+import logo1 from "../assets/logo1.png";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { LogOut, Heart, ShoppingCart } from 'lucide-react';
-import Image from 'next/image'; // Import Next.js Image component
-import logo1 from '../assets/logo1.png';
-
-// Define the type for the props this component expects
-interface HeaderProps {
-  favoritesCount: number;
-  cartCount: number;
-}
-
-// Update the component to accept the defined props
-export default function Header({ favoritesCount, cartCount }: HeaderProps) {
+export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isLoggedIn, logout } = useAuth();
   const [favoritesCount, setFavoritesCount] = useState(0);
@@ -51,14 +36,10 @@ export default function Header({ favoritesCount, cartCount }: HeaderProps) {
   }, []);
 
   return (
-    <header className="w-full shadow sticky top-0 z-50 bg-white/90 backdrop-blur">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2 text-black">
-  return (
     <header className="w-full shadow sticky top-0 z-50 bg-white/90 backdrop-blur text-black">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          {/* Use Next.js Image component for better performance and to handle import correctly */}
           <Image src={logo1} alt="Logo" className="h-10 w-auto" />
           <span className="font-bold text-xl">APEX</span>
         </Link>

@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Heart } from 'lucide-react'; 
+import { Heart } from 'lucide-react';
 import { ShopProduct } from '../models/ShopProduct';
 
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
@@ -212,7 +212,7 @@ export default function Products() {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('all'); // Gjendja e re per kategorine
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const router = useRouter();
 
   // Load products from database
@@ -227,7 +227,7 @@ export default function Products() {
       if (res.ok) {
         const dbProducts = await res.json();
         const combinedProducts = [...dbProducts, ...fallbackProducts];
-        setProducts(combinedProducts.reverse()); // Rendit produktet e reja ne fillim
+        setProducts(combinedProducts.reverse());
       } else {
         setProducts(fallbackProducts.reverse());
       }
@@ -265,26 +265,19 @@ export default function Products() {
     }
   };
 
-  const addToCart = (product) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      let updatedCart;
-      if (existing) {
-        updatedCart = prev.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
   const addToCart = (product: ShopProduct) => {
-    const newCart = (() => {
-      const exists = cart.find((p) => p.id === product.id);
-      if (exists) {
-        return cart.map((p) =>
-          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
-        );
-      } else {
-        updatedCart = [...prev, { ...product, quantity: 1 }];
-      }
-      localStorage.setItem('apex_cart', JSON.stringify(updatedCart));
-      return updatedCart;
-    });
+    const exists = cart.find((p) => p.id === product.id);
+    let newCart;
+    if (exists) {
+      newCart = cart.map((p) =>
+        p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
+      );
+    } else {
+      newCart = [...cart, { ...product, quantity: 1 }];
+    }
+    syncCart(newCart);
+    setMessage('Produkti u shtua në shportë!');
+    setTimeout(() => setMessage(null), 1500);
   };
 
   const removeFromCart = (id: number) => {
@@ -407,13 +400,10 @@ export default function Products() {
                 Total: {cart.reduce((acc, item) => {
                   let price = item.price;
                   if (typeof price === "string") {
-                    price = price.replace('€', '').trim();
+                    price = price.replace('€', '').replace(',', '.').trim();
                   }
-                  return acc + item.quantity * Number(price);
-                  const price = typeof item.price === 'string' 
-                    ? parseFloat(item.price.replace('€', '').replace(',', '.')) 
-                    : parseFloat(String(item.price));
-                  return acc + (item.quantity * (isNaN(price) ? 0 : price));
+                  const priceNum = parseFloat(price as string);
+                  return acc + item.quantity * (isNaN(priceNum) ? 0 : priceNum);
                 }, 0).toFixed(2)} €
               </div>
               <button
@@ -477,18 +467,6 @@ export default function Products() {
                   Add to Cart
                 </button>
               </div>
-              <div
-                className="text-lg font-bold text-orange-500 mb-2"
-                style={fontMontserrat}
-              >
-                {product.price}
-              </div>
-              <button
-                onClick={() => addToCart(product)}
-                className="px-5 py-2 bg-black text-white font-extrabold italic rounded-none shadow hover:bg-blue-900 transition text-base uppercase"
-              >
-                Add to Cart
-              </button>
             ))}
           </div>
         )}
