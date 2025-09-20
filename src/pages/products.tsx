@@ -293,7 +293,7 @@ export default function Products() {
             </p>
           </div>
         )}
-        {/* Motivational message */}
+        
         <div className="mt-16 text-center text-blue-900 text-xl font-bold" style={fontMontserrat}>
           Choose the supplement that fits you and start your journey to success!
         </div>

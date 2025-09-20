@@ -66,7 +66,7 @@ export default function Header() {
           </Link>
 
           {/* Cart */}
-          <Link href="/cart" className="relative flex items-center">
+          <Link href="/orders" className="relative flex items-center">
             <ShoppingCart className="h-5 w-5 mr-1" />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full px-2 py-0.5 font-bold">
