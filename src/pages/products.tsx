@@ -8,53 +8,25 @@ import { ShopProduct } from '../models/ShopProduct';
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
 const fontOpenSans = { fontFamily: 'Open Sans, Arial, Helvetica, sans-serif' };
 
-// Define a type for your cart items
 interface CartProduct extends ShopProduct {
   quantity: number;
 }
 
-export default function Products() {
-  const [products, setProducts] = useState<ShopProduct[]>([]);
+type ProductsProps = {
+  products: ShopProduct[];
+};
+
+export default function Products({ products = [] }: ProductsProps) {
   const [cart, setCart] = useState<CartProduct[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const router = useRouter();
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/shop-products');
-      if (res.ok) {
-        const dbProducts = await res.json();
-        // Corrected: Only set products with data from the database
-        setProducts(dbProducts.reverse());
-      } else {
-        // Corrected: Set to an empty array or handle the error
-        setProducts([]); 
-        console.error('Failed to fetch products from the database.');
-      }
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      // Corrected: Set to an empty array on a network error
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('apex_cart');
-      if (stored) {
-        const parsedCart: CartProduct[] = JSON.parse(stored);
-        setCart(parsedCart);
-      }
+      if (stored) setCart(JSON.parse(stored));
       const fav = localStorage.getItem('apex_favorites');
       if (fav) setFavorites(JSON.parse(fav));
     }
@@ -139,14 +111,6 @@ export default function Products() {
           </p>
         </section>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="flex justify-center items-center py-20">
-            <div className="text-xl text-blue-900 font-bold" style={fontMontserrat}>
-              Duke ngarkuar produktet...
-            </div>
-          </div>
-        )}
         {/* Mesazhi për shtimin në shportë */}
         {message && (
           <div className="fixed top-8 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg font-bold z-50" style={fontMontserrat}>
@@ -229,61 +193,59 @@ export default function Products() {
         </div>
 
         {/* Produktet e filtruara */}
-        {!loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 w-full max-w-7xl px-4">
-            {filteredProducts.map((product) => (
-              <div key={product.id} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100 relative">
-                <button
-                  onClick={() => toggleFavorite(product.id)}
-                  className="absolute top-4 right-4 p-1 rounded-full bg-white shadow hover:bg-pink-100 transition"
-                  aria-label="Add to favorites"
-                  type="button"
-                >
-                  <Heart
-                    className={`w-6 h-6 ${favorites.includes(product.id) ? 'fill-pink-500 text-pink-500' : 'text-gray-400'}`}
-                    fill={favorites.includes(product.id) ? '#ec4899' : 'none'}
-                  />
-                </button>
-                <img
-                  src={product.img}
-                  alt={product.name}
-                  className="w-32 h-32 object-contain rounded-xl mb-4"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik02NCA0OEM4OC44MzY1IDQ4IDEwOCA2Ny4xNjM1IDEwOCA5MkMxMDggMTE2LjgzNiA4OC44MzY1IDEzNiA2NCAxMzZDMzkuMTYzNSAxMzYgMjAgMTE2LjgzNiAyMCA5MkMyMCA2Ny4xNjM1IDM5LjE2MzUgNDggNjQgNDhaIiBmaWxsPSIjRTVFN0VCIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzlDQTNBRiIgZm9udC1zaXplPSIxNnB4Ij5ObyBJbWFnZTwvdGV4dD4KICA8L3N2Zz4K';
-                  }}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 w-full max-w-7xl px-4">
+          {filteredProducts.map((product) => (
+            <div key={product.id} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100 relative">
+              <button
+                onClick={() => toggleFavorite(product.id)}
+                className="absolute top-4 right-4 p-1 rounded-full bg-white shadow hover:bg-pink-100 transition"
+                aria-label="Add to favorites"
+                type="button"
+              >
+                <Heart
+                  className={`w-6 h-6 ${favorites.includes(product.id) ? 'fill-pink-500 text-pink-500' : 'text-gray-400'}`}
+                  fill={favorites.includes(product.id) ? '#ec4899' : 'none'}
                 />
-                <h2
-                  className="text-xl font-extrabold uppercase text-blue-900 mb-2 text-center"
-                  style={fontMontserrat}
-                >
-                  {product.name}
-                </h2>
-                <div
-                  className="text-base font-bold text-gray-500 mb-1"
-                  style={fontOpenSans}
-                >
-                  {product.category}
-                </div>
-                <div
-                  className="text-lg font-bold text-orange-500 mb-2"
-                  style={fontMontserrat}
-                >
-                  {product.price}
-                </div>
-                <button
-                  onClick={() => addToCart(product)}
-                  className="px-6 py-2 bg-orange-500 text-white font-bold uppercase rounded shadow hover:bg-orange-600 transition mb-2"
-                  style={fontMontserrat}
-                >
-                  Add to Cart
-                </button>
+              </button>
+              <img
+                src={product.img}
+                alt={product.name}
+                className="w-32 h-32 object-contain rounded-xl mb-4"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik02NCA0OEM4OC44MzY1IDQ4IDEwOCA2Ny4xNjM1IDEwOCA5MkMxMDggMTE2LjgzNiA4OC44MzY1IDEzNiA2NCAxMzZDMzkuMTYzNSAxMzYgMjAgMTE2LjgzNiAyMCA5MkMyMCA2Ny4xNjM1IDM5LjE2MzUgNDggNjQgNDhaIiBmaWxsPSIjRTVFN0VCIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzlDQTNBRiIgZm9udC1zaXplPSIxNnB4Ij5ObyBJbWFnZTwvdGV4dD4KICA8L3N2Zz4K';
+                }}
+              />
+              <h2
+                className="text-xl font-extrabold uppercase text-blue-900 mb-2 text-center"
+                style={fontMontserrat}
+              >
+                {product.name}
+              </h2>
+              <div
+                className="text-base font-bold text-gray-500 mb-1"
+                style={fontOpenSans}
+              >
+                {product.category}
               </div>
-            ))}
-          </div>
-        )}
+              <div
+                className="text-lg font-bold text-orange-500 mb-2"
+                style={fontMontserrat}
+              >
+                {product.price}
+              </div>
+              <button
+                onClick={() => addToCart(product)}
+                className="px-6 py-2 bg-orange-500 text-white font-bold uppercase rounded shadow hover:bg-orange-600 transition mb-2"
+                style={fontMontserrat}
+              >
+                Add to Cart
+              </button>
+            </div>
+          ))}
+        </div>
 
         {/* Empty state */}
-        {!loading && filteredProducts.length === 0 && (
+        {filteredProducts.length === 0 && (
           <div className="text-center py-20">
             <div className="text-2xl text-blue-900 font-bold mb-4" style={fontMontserrat}>
               Nuk ka produkte të disponueshme për këtë kategori.
@@ -301,4 +263,15 @@ export default function Products() {
       <Footer />
     </div>
   );
+}
+
+// KJO ËSHTË PJESA E RËNDËSISHME PËR SSG/ISR:
+export async function getStaticProps() {
+  // NDRYSHO URL-n sipas API-së tënde reale!
+  const res = await fetch('http://localhost:3000/api/shop-products');
+  const products = await res.json();
+  return {
+    props: { products },
+    revalidate: 60, // ISR: rifreskohet çdo 60 sekonda
+  };
 }
