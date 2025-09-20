@@ -81,9 +81,9 @@ export default function Header() {
               <Link href="/login" className="px-3 py-1 rounded hover:bg-gray-100">Login</Link>
             </>
           ) : (
-            <button onClick={logout} className="px-3 py-1 rounded hover:bg-gray-100 flex items-center">
-              <LogOut className="h-4 w-4 mr-1" /> Logout
-            </button>
+           
+            <Link href="/logout" className="px-3 py-1 rounded hover:bg-gray-100">Logout</Link>
+            
           )}
         </div>
 
