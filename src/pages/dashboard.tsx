@@ -10,10 +10,22 @@ interface User {
   password: string;
 }
 
-type ActiveTab = 'users' | 'shop-products';
+// Shtohet lloji i ri per mesazhet e kontaktit
+interface ContactMessage {
+  _id: string;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: string;
+}
+
+// Shtohet lloji i ri ne ActiveTab
+type ActiveTab = 'users' | 'shop-products' | 'contact-messages';
 
 export default function Dashboard() {
   const [users, setUsers] = useState<User[]>([]);
+  // Gjendja e re per mesazhet e kontaktit
+  const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
   const [editUserId, setEditUserId] = useState<string | null>(null);
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -21,12 +33,12 @@ export default function Dashboard() {
   const { isLoggedIn } = useAuth();
   const router = useRouter();
 
-  // ✅ Redirect to login if not logged in
+  // Redirect to login if not logged in
   useEffect(() => {
     if (!isLoggedIn) router.replace('/login');
   }, [isLoggedIn, router]);
 
-  // ✅ Fetch all users
+  // Fetch all users
   const fetchUsers = async () => {
     const res = await fetch('/api/users');
     if (res.ok) {
@@ -35,11 +47,23 @@ export default function Dashboard() {
     }
   };
 
+  // Funksioni i ri per te marre mesazhet
+  const fetchContactMessages = async () => {
+    const res = await fetch('/api/contact');
+    if (res.ok) {
+      const data = await res.json();
+      setContactMessages(data);
+    }
+  };
+
   useEffect(() => {
-    if (isLoggedIn) fetchUsers();
+    if (isLoggedIn) {
+      fetchUsers();
+      fetchContactMessages(); // Thirr funksionin per mesazhet
+    }
   }, [isLoggedIn]);
 
-  // ✅ Update user
+  // Update user
   const handleUpdate = async (userId: string) => {
     if (!newUsername || !newPassword) return;
     await fetch('/api/auth', {
@@ -53,7 +77,7 @@ export default function Dashboard() {
     fetchUsers();
   };
 
-  // ✅ Delete user
+  // Delete user
   const handleDelete = async (userId: string) => {
     await fetch('/api/auth', {
       method: 'POST',
@@ -92,6 +116,17 @@ export default function Dashboard() {
             >
               Produktet e Dyqanit
             </button>
+            {/* Tab i ri per mesazhet */}
+            <button
+              onClick={() => setActiveTab('contact-messages')}
+              className={`px-6 py-3 font-semibold transition-colors ${
+                activeTab === 'contact-messages'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Mesazhet e Kontaktit
+            </button>
           </div>
 
           {/* Tab Content */}
@@ -121,7 +156,6 @@ export default function Dashboard() {
                             u.username
                           )}
                         </td>
-
                         <td className="p-3">
                           {editUserId === u._id ? (
                             <input
@@ -133,7 +167,6 @@ export default function Dashboard() {
                             '••••••••'
                           )}
                         </td>
-
                         <td className="p-3 space-x-2">
                           {editUserId === u._id ? (
                             <button
@@ -178,6 +211,42 @@ export default function Dashboard() {
 
           {activeTab === 'shop-products' && (
             <ShopProductsCRUD />
+          )}
+
+          {/* Përmbajtja e re për mesazhet e kontaktit */}
+          {activeTab === 'contact-messages' && (
+            <div>
+              <h2 className="text-2xl font-bold mb-6 text-black">Mesazhet e Kontaktit</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="p-3 font-semibold text-gray-600">Emri</th>
+                      <th className="p-3 font-semibold text-gray-600">Email</th>
+                      <th className="p-3 font-semibold text-gray-600">Mesazhi</th>
+                      <th className="p-3 font-semibold text-gray-600">Data e Dërgimit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {contactMessages.map((msg) => (
+                      <tr key={msg._id} className="border-b hover:bg-gray-50 transition text-black">
+                        <td className="p-3">{msg.name}</td>
+                        <td className="p-3">{msg.email}</td>
+                        <td className="p-3">{msg.message}</td>
+                        <td className="p-3">{new Date(msg.createdAt).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                    {contactMessages.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="text-center p-4 text-gray-500">
+                          Nuk ka mesazhe të dërguara.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           )}
         </div>
       </div>

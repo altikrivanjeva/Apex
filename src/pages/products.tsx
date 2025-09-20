@@ -2,7 +2,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Heart } from 'lucide-react'; // npm install lucide-react
+import { Heart } from 'lucide-react'; 
 import { ShopProduct } from '../models/ShopProduct';
 
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
@@ -204,13 +204,14 @@ const fallbackProducts: ShopProduct[] = [
   }
 ]; 
 
-// Shporta e thjeshtë në state
+
 export default function Products() {
   const [products, setProducts] = useState<ShopProduct[]>([]);
   const [cart, setCart] = useState<{ id: number; name: string; img: string; price: string; quantity: number }[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('all'); // Gjendja e re per kategorine
   const router = useRouter();
 
   // Load products from database
@@ -224,17 +225,14 @@ export default function Products() {
       const res = await fetch('/api/shop-products');
       if (res.ok) {
         const dbProducts = await res.json();
-        // Combine fallback products with database products
-        const combinedProducts = [...fallbackProducts, ...dbProducts];
-        setProducts(combinedProducts);
+        const combinedProducts = [...dbProducts, ...fallbackProducts];
+        setProducts(combinedProducts.reverse()); // Rendit produktet e reja ne fillim
       } else {
-        // Only use fallback products if API fails
-        setProducts(fallbackProducts);
+        setProducts(fallbackProducts.reverse());
       }
     } catch (error) {
       console.error('Error fetching products:', error);
-      // Only use fallback products if there's an error
-      setProducts(fallbackProducts);
+      setProducts(fallbackProducts.reverse());
     } finally {
       setLoading(false);
     }
@@ -250,7 +248,6 @@ export default function Products() {
     }
   }, []);
 
-  // Sync cart with localStorage and update cart count in navbar
   const syncCart = (newCart: typeof cart) => {
     setCart(newCart);
     if (typeof window !== 'undefined') {
@@ -259,7 +256,6 @@ export default function Products() {
     }
   };
 
-  // Sync favorites with localStorage
   const syncFavorites = (newFavs: number[]) => {
     setFavorites(newFavs);
     if (typeof window !== 'undefined') {
@@ -305,6 +301,14 @@ export default function Products() {
     syncFavorites(newFavs);
   };
 
+  // Llogarit kategoritë unike
+  const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))];
+
+  // Filtro produktet bazuar ne kategorine e zgjedhur
+  const filteredProducts = selectedCategory === 'all'
+    ? products
+    : products.filter(product => product.category === selectedCategory);
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #f5f5f5 0%, #eaf0fa 100%)' }}>
       <style jsx global>{`
@@ -337,6 +341,25 @@ export default function Products() {
             {message}
           </div>
         )}
+
+        {/* Filter Section */}
+        <div className="w-full max-w-7xl px-4 flex justify-end mb-6">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-gray-700" style={fontMontserrat}>Filtro sipas kategorisë:</span>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 border rounded-xl shadow-sm text-gray-800"
+              style={fontOpenSans}
+            >
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category === 'all' ? 'Të gjitha' : category}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         
         <div className="w-full max-w-3xl mb-12">
           {cart.length > 0 && (
@@ -374,7 +397,6 @@ export default function Products() {
               </ul>
               <div className="mt-4 text-right font-bold text-blue-900" style={fontMontserrat}>
                 Total: {cart.reduce((acc, item) => {
-                  // Handle price conversion more safely
                   const price = typeof item.price === 'string' 
                     ? parseFloat(item.price.replace('€', '').replace(',', '.')) 
                     : parseFloat(String(item.price));
@@ -391,10 +413,11 @@ export default function Products() {
             </div>
           )}
         </div>
-        {/* Produktet */}
+        
+        {/* Produktet e filtruara */}
         {!loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 w-full max-w-7xl px-4">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <div key={product.id} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100 relative">
                 <button
                   onClick={() => toggleFavorite(product.id)}
@@ -446,13 +469,13 @@ export default function Products() {
         )}
         
         {/* Empty state */}
-        {!loading && products.length === 0 && (
+        {!loading && filteredProducts.length === 0 && (
           <div className="text-center py-20">
             <div className="text-2xl text-blue-900 font-bold mb-4" style={fontMontserrat}>
-              Nuk ka produkte të disponueshme
+              Nuk ka produkte të disponueshme për këtë kategori.
             </div>
             <p className="text-gray-600" style={fontOpenSans}>
-              Administratori nuk ka shtuar ende produkte për shitje.
+              Provo të zgjedhësh një kategori tjetër.
             </p>
           </div>
         )}
