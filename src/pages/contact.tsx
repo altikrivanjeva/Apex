@@ -20,7 +20,7 @@ export default function Contact() {
   return (
     <div className="min-h-screen flex flex-col bg-[#f5f5f5]">
       <Header />
-      <main className="flex-1 flex flex-col items-center justify-center py-16 px-4">
+      <main className="flex-1 flex flex-col items-center justify-center py-16 px-4 text-black">
         <h1 className="text-3xl font-extrabold uppercase mb-8 text-blue-900" style={fontMontserrat}>
           Contact Us
         </h1>
