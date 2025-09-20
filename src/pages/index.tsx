@@ -2,8 +2,52 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Link from 'next/link';
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      var Tawk_API = Tawk_API || {};
+      var Tawk_LoadStart = new Date();
+      (function () {
+        var s1 = document.createElement("script");
+        s1.async = true;
+        s1.src = "https://embed.tawk.to/68cd4cbff6dadc19215a37c6/1j5gv7jk5";
+        s1.charset = "UTF-8";
+        s1.setAttribute("crossorigin", "*");
+        document.body.appendChild(s1);
+      })();
+    }
+  }, []);
+
+  // Shto këtë funksion për të shtuar në favorite
+  const addToFavorites = (productId: number) => {
+    let favs = [];
+    if (typeof window !== "undefined") {
+      favs = JSON.parse(localStorage.getItem('apex_favorites') || '[]');
+      if (!favs.includes(productId)) {
+        favs.push(productId);
+        localStorage.setItem('apex_favorites', JSON.stringify(favs));
+        window.dispatchEvent(new CustomEvent('favorites-updated'));
+      }
+    }
+  };
+
+  const addToCart = (product: any) => {
+    let cart = [];
+    if (typeof window !== "undefined") {
+      cart = JSON.parse(localStorage.getItem('apex_cart') || '[]');
+      const existing = cart.find((item: any) => item.id === product.id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ ...product, quantity: 1 });
+      }
+      localStorage.setItem('apex_cart', JSON.stringify(cart));
+      window.dispatchEvent(new CustomEvent('cart-updated'));
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f5f5f5]">
       {/* Google Fonts import for Montserrat and Open Sans */}
@@ -190,8 +234,9 @@ export default function Home() {
                   fontStyle: 'italic',
                   borderWidth: '2px',
                 }}
+                onClick={() => addToCart({ id: 1, name: 'Whey Gold Protein', price: 39.99 })}
               >
-                Add to Basket
+                Add to Cart
               </button>
             </div>
             <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100">
@@ -226,8 +271,9 @@ export default function Home() {
                   fontStyle: 'italic',
                   borderWidth: '2px',
                 }}
+                onClick={() => addToCart({ id: 2, name: 'C4 Pre Workout', price: 29.99 })}
               >
-                Add to Basket
+                Add to Cart
               </button>
             </div>
             <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100">
@@ -262,8 +308,9 @@ export default function Home() {
                   fontStyle: 'italic',
                   borderWidth: '2px',
                 }}
+                onClick={() => addToCart({ id: 3, name: 'Amino Acidet', price: 19.99 })}
               >
-                Add to Basket
+                Add to Cart
               </button>
             </div>
           </div>
@@ -280,7 +327,7 @@ export default function Home() {
                 display: 'inline-block',
               }}
             >
-              Shiko të gjitha produktet
+              Look all the products!
             </a>
           </div>
         </section>

@@ -1,21 +1,42 @@
 import Link from "next/link";
-import { useState } from "react";
+import logo1 from "../assets/logo1.png";
 import { useAuth } from "../context/AuthContext";
 import { LogOut, Heart, ShoppingCart } from "lucide-react";
-import logo1 from "../assets/logo1.png";
+import { useState, useEffect } from "react";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isLoggedIn, logout } = useAuth();
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
 
-  // TODO: replace with your context/state (from DB, API, or local storage)
-  const favoritesCount = 0; // <- replace with real count
-  const cartCount = 0; // <- replace with real count
+  useEffect(() => {
+    const updateFavorites = () => {
+      if (typeof window !== "undefined") {
+        const favs = JSON.parse(localStorage.getItem("apex_favorites") || "[]");
+        setFavoritesCount(favs.length);
+      }
+    };
+    updateFavorites();
+    window.addEventListener("favorites-updated", updateFavorites);
+    return () => window.removeEventListener("favorites-updated", updateFavorites);
+  }, []);
+
+  useEffect(() => {
+    const updateCart = () => {
+      if (typeof window !== "undefined") {
+        const cart = JSON.parse(localStorage.getItem("apex_cart") || "[]");
+        setCartCount(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
+      }
+    };
+    updateCart();
+    window.addEventListener("cart-updated", updateCart);
+    return () => window.removeEventListener("cart-updated", updateCart);
+  }, []);
 
   return (
     <header className="w-full shadow sticky top-0 z-50 bg-white/90 backdrop-blur">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2 text-black">
-        {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <img src={logo1.src} alt="Logo" className="h-10 w-auto" />
           <span className="font-bold text-xl">APEX</span>

@@ -202,7 +202,7 @@ const products = [
   }
 ]; 
 
-// Shporta e thjeshtë në state
+// Vendose këtë në faqen ku shfaqen produktet (p.sh. index.tsx ose products.tsx)
 export default function Products() {
   const [cart, setCart] = useState<{ id: number; name: string; img: string; price: string; quantity: number }[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -237,19 +237,20 @@ export default function Products() {
     }
   };
 
-  const addToCart = (product: typeof products[0]) => {
-    const newCart = (() => {
-      const exists = cart.find((p) => p.id === product.id);
-      if (exists) {
-        return cart.map((p) =>
-          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
+  const addToCart = (product) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      let updatedCart;
+      if (existing) {
+        updatedCart = prev.map(item =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
+      } else {
+        updatedCart = [...prev, { ...product, quantity: 1 }];
       }
-      return [...cart, { ...product, quantity: 1 }];
-    })();
-    syncCart(newCart);
-    setMessage('Product added to cart!');
-    setTimeout(() => setMessage(null), 2000);
+      localStorage.setItem('apex_cart', JSON.stringify(updatedCart));
+      return updatedCart;
+    });
   };
 
   const removeFromCart = (id: number) => {
@@ -333,7 +334,13 @@ export default function Products() {
                 ))}
               </ul>
               <div className="mt-4 text-right font-bold text-blue-900" style={fontMontserrat}>
-                Total: {cart.reduce((acc, item) => acc + item.quantity * Number(item.price.replace('€', '')), 0).toFixed(2)} €
+                Total: {cart.reduce((acc, item) => {
+                  let price = item.price;
+                  if (typeof price === "string") {
+                    price = price.replace('€', '').trim();
+                  }
+                  return acc + item.quantity * Number(price);
+                }, 0).toFixed(2)} €
               </div>
               <button
                 className="mt-4 px-6 py-2 bg-orange-500 text-white font-bold uppercase rounded shadow hover:bg-orange-600 transition"
@@ -385,8 +392,7 @@ export default function Products() {
               </div>
               <button
                 onClick={() => addToCart(product)}
-                className="px-6 py-2 bg-orange-500 text-white font-bold uppercase rounded shadow hover:bg-orange-600 transition mb-2"
-                style={fontMontserrat}
+                className="px-5 py-2 bg-black text-white font-extrabold italic rounded-none shadow hover:bg-blue-900 transition text-base uppercase"
               >
                 Add to Cart
               </button>

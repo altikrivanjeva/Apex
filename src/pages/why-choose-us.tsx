@@ -1,9 +1,13 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
 
 export default function WhyChooseUs() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-orange-50">
       <Header />
@@ -59,9 +63,13 @@ export default function WhyChooseUs() {
           </div>
         </div>
         <div className="mt-14 text-center">
-          <span className="inline-block bg-orange-100 text-orange-700 font-bold px-6 py-3 rounded-full text-lg">
+          <button
+            className="inline-block bg-orange-100 text-orange-700 font-bold px-6 py-3 rounded-full text-lg
+              hover:bg-orange-500 hover:text-white hover:scale-105 transition duration-200 shadow-md active:scale-95"
+            onClick={() => router.push('/register')}
+          >
             Join the Apex Family Today!
-          </span>
+          </button>
         </div>
       </main>
       <Footer />

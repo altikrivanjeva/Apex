@@ -3,7 +3,7 @@ import Footer from '../components/Footer';
 
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
 
-export default function CustomerReviews() {
+export default function CustomerReviews({ reviews }) {
   return (
     <div className="min-h-screen flex flex-col bg-[#f5f5f5]">
       <Header />
@@ -12,30 +12,43 @@ export default function CustomerReviews() {
           Customer Reviews
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl">
-          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Arber K." className="w-20 h-20 rounded-full mb-4" />
-            <h3 className="font-bold text-lg mb-2" style={fontMontserrat}>Arber K.</h3>
-            <p className="text-gray-700 text-center" style={fontMontserrat}>
-              The products are top quality and the delivery was very fast!
-            </p>
-          </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100">
-            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Elira S." className="w-20 h-20 rounded-full mb-4" />
-            <h3 className="font-bold text-lg mb-2" style={fontMontserrat}>Elira S.</h3>
-            <p className="text-gray-700 text-center" style={fontMontserrat}>
-              I am very satisfied with the service and the supplements I received.
-            </p>
-          </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100">
-            <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Gent R." className="w-20 h-20 rounded-full mb-4" />
-            <h3 className="font-bold text-lg mb-2" style={fontMontserrat}>Gent R.</h3>
-            <p className="text-gray-700 text-center" style={fontMontserrat}>
-              Apex is my go-to choice for every sports supplement!
-            </p>
-          </div>
+          {reviews.map((review) => (
+            <div key={review.id} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100">
+              {/* No profile image */}
+              <h3 className="font-bold text-lg mb-2" style={fontMontserrat}>{review.name}</h3>
+              <p className="text-gray-700 text-center" style={fontMontserrat}>
+                {review.text}
+              </p>
+            </div>
+          ))}
         </div>
       </main>
       <Footer />
     </div>
   );
+}
+
+export async function getStaticProps() {
+  // 3 persona pa foto profili
+  const reviews = [
+    {
+      id: 1,
+      name: "Arta Krasniqi",
+      text: "Jam shumë e kënaqur me shërbimin dhe produktet e Apex! Porosia ime arriti shumë shpejt dhe gjithçka ishte siç pritej.",
+    },
+    {
+      id: 2,
+      name: "Blerim Gashi",
+      text: "Stafi është shumë profesional dhe i gatshëm të ndihmojë. Produktet janë të cilësisë së lartë. Do të porosis përsëri!",
+    },
+    {
+      id: 3,
+      name: "Elira Berisha",
+      text: "Çmimet janë shumë të mira dhe kam marrë këshilla të dobishme për suplementet që më përshtaten. Rekomandoj Apex për të gjithë!",
+    },
+  ];
+  return {
+    props: { reviews },
+    revalidate: 60,
+  };
 }

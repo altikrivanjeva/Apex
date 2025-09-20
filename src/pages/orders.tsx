@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -19,8 +19,14 @@ export default function Orders() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('apex_cart');
-      if (stored) setCart(JSON.parse(stored));
+      const updateCart = () => {
+        const stored = localStorage.getItem('apex_cart');
+        if (stored) setCart(JSON.parse(stored));
+        else setCart([]);
+      };
+      updateCart();
+      window.addEventListener('cart-updated', updateCart);
+      return () => window.removeEventListener('cart-updated', updateCart);
     }
   }, []);
 
@@ -28,8 +34,18 @@ export default function Orders() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const orderData = {
+      ...form,
+      cart,
+      createdAt: new Date().toISOString(),
+    };
+    await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+    });
     setSuccess(true);
     setForm({
       name: '',
@@ -68,13 +84,26 @@ export default function Orders() {
                       <span className="text-gray-600" style={fontMontserrat}>x{item.quantity}</span>
                     </div>
                     <span className="text-orange-500 font-bold" style={fontMontserrat}>
-                      {(Number(item.price.replace('€', '')) * item.quantity).toFixed(2)} €
+                      {(
+                        item.quantity *
+                        Number(
+                          typeof item.price === "string"
+                            ? item.price.replace('€', '').trim()
+                            : item.price
+                        )
+                      ).toFixed(2)} €
                     </span>
                   </li>
                 ))}
               </ul>
               <div className="mt-2 text-right font-bold text-blue-900" style={fontMontserrat}>
-                Total: {cart.reduce((acc, item) => acc + item.quantity * Number(item.price.replace('€', '')), 0).toFixed(2)} €
+                Total: {cart.reduce((acc, item) => {
+                  let price = item.price;
+                  if (typeof price === "string") {
+                    price = price.replace('€', '').trim();
+                  }
+                  return acc + item.quantity * Number(price);
+                }, 0).toFixed(2)} €
               </div>
             </div>
           ) : (
@@ -213,6 +242,47 @@ export default function Orders() {
           animation: fade-in 0.5s ease;
         }
       `}</style>
+    </div>
+  );
+}
+
+export function ProductsPage() {
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('apex_cart');
+    if (stored) setCart(JSON.parse(stored));
+  }, []);
+
+  const addToCart = (product) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      let updatedCart;
+      if (existing) {
+        updatedCart = prev.map(item =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      } else {
+        updatedCart = [...prev, { ...product, quantity: 1 }];
+      }
+      localStorage.setItem('apex_cart', JSON.stringify(updatedCart));
+      return updatedCart;
+    });
+  };
+
+  return (
+    <div>
+      {/* ...kodi për produktet... */}
+      <div>
+        <h2>CART</h2>
+        <ul>
+          {cart.map(item => (
+            <li key={item.id}>
+              {item.name} x{item.quantity}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
