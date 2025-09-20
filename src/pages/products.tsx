@@ -8,7 +8,7 @@ import { ShopProduct } from '../models/ShopProduct';
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
 const fontOpenSans = { fontFamily: 'Open Sans, Arial, Helvetica, sans-serif' };
 
-// Fallback products in case database is empty
+
 const fallbackProducts: ShopProduct[] = [
   {
     name: 'Whey Gold Protein',
@@ -204,7 +204,7 @@ const fallbackProducts: ShopProduct[] = [
   }
 ]; 
 
-// Vendose këtë në faqen ku shfaqen produktet (p.sh. index.tsx ose products.tsx)
+
 
 export default function Products() {
   const [products, setProducts] = useState<ShopProduct[]>([]);
@@ -215,7 +215,7 @@ export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const router = useRouter();
 
-  // Load products from database
+  
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -482,7 +482,7 @@ export default function Products() {
             </p>
           </div>
         )}
-        {/* Motivational message */}
+        
         <div className="mt-16 text-center text-blue-900 text-xl font-bold" style={fontMontserrat}>
           Choose the supplement that fits you and start your journey to success!
         </div>
