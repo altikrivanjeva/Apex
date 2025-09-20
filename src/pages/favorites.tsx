@@ -1,3 +1,5 @@
+// File: your-project/pages/favorites.tsx
+
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useEffect, useState } from 'react';
@@ -200,7 +202,7 @@ const products = [
     status: 'Add to Cart',
     id: 24,
   }
-]; 
+];
 
 export default function Favorites() {
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -248,6 +250,7 @@ export default function Favorites() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #f5f5f5 0%, #eaf0fa 100%)' }}>
+      {/* THIS IS THE LINE THAT WAS CAUSING THE ERROR */}
       <Header cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)} favoritesCount={favorites.length} />
       <main className="flex-1 flex flex-col items-center py-16">
         <section className="w-full max-w-5xl mx-auto mb-12 px-4 py-10 bg-gradient-to-r from-pink-100 via-blue-50 to-blue-100 rounded-2xl shadow-lg flex flex-col items-center">

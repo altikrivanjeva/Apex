@@ -1,10 +1,26 @@
+import Header from '@/components/Header';
 import Link from "next/link";
 import logo1 from "../assets/logo1.png";
 import { useAuth } from "../context/AuthContext";
 import { LogOut, Heart, ShoppingCart } from "lucide-react";
 import { useState, useEffect } from "react";
+// File: your-project/components/Header.tsx
 
-export default function Header() {
+import Link from 'next/link';
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { LogOut, Heart, ShoppingCart } from 'lucide-react';
+import Image from 'next/image'; // Import Next.js Image component
+import logo1 from '../assets/logo1.png';
+
+// Define the type for the props this component expects
+interface HeaderProps {
+  favoritesCount: number;
+  cartCount: number;
+}
+
+// Update the component to accept the defined props
+export default function Header({ favoritesCount, cartCount }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isLoggedIn, logout } = useAuth();
   const [favoritesCount, setFavoritesCount] = useState(0);
@@ -37,12 +53,17 @@ export default function Header() {
   return (
     <header className="w-full shadow sticky top-0 z-50 bg-white/90 backdrop-blur">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2 text-black">
+  return (
+    <header className="w-full shadow sticky top-0 z-50 bg-white/90 backdrop-blur text-black">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <img src={logo1.src} alt="Logo" className="h-10 w-auto" />
+          {/* Use Next.js Image component for better performance and to handle import correctly */}
+          <Image src={logo1} alt="Logo" className="h-10 w-auto" />
           <span className="font-bold text-xl">APEX</span>
         </Link>
 
-        {/* Desktop Nav */}
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-6 items-center">
           <Link href="/">Home</Link>
           <Link href="/products">Products</Link>
@@ -53,30 +74,9 @@ export default function Header() {
 
         {/* Actions */}
         <div className="hidden md:flex gap-4 items-center">
-          {!isLoggedIn ? (
-            <>
-              <Link href="/register" className="px-3 py-1 rounded hover:bg-gray-100">
-                Register
-              </Link>
-              <Link href="/login" className="px-3 py-1 rounded hover:bg-gray-100">
-                Login
-              </Link>
-            </>
-          ) : (
-            <button
-              onClick={logout}
-              className="px-3 py-1 rounded hover:bg-gray-100 flex items-center"
-            >
-              <LogOut className="h-4 w-4 mr-1" /> Logout
-            </button>
-          )}
-
           {/* Favorites */}
-          <Link
-            href="/favorites"
-            className="relative flex items-center justify-center rounded-xl border px-3 py-2 text-sm hover:bg-red-600 hover:text-white transition"
-          >
-            <Heart className="h-5 w-5" />
+          <Link href="/favorites" className="relative flex items-center">
+            <Heart className="h-5 w-5 mr-1" />
             {favoritesCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full px-2 py-0.5 font-bold">
                 {favoritesCount}
@@ -85,37 +85,45 @@ export default function Header() {
           </Link>
 
           {/* Cart */}
-          <Link
-            href="/orders"
-            className="relative flex items-center justify-center rounded-xl border px-3 py-2 text-sm hover:bg-red-600 hover:text-white transition"
-          >
-            <ShoppingCart className="h-5 w-5" />
+          <Link href="/cart" className="relative flex items-center">
+            <ShoppingCart className="h-5 w-5 mr-1" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full px-1">
+              <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full px-2 py-0.5 font-bold">
                 {cartCount}
               </span>
             )}
           </Link>
-        </div>
 
-        {/* Mobile button */}
-        <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
-          Menu
-        </button>
-      </div>
-
-      {/* Mobile Nav */}
-      {mobileOpen && (
-        <div className="md:hidden flex flex-col gap-2 p-4 bg-white shadow">
-          <Link href="/">Home</Link>
-          <Link href="/products">Products</Link>
-          <Link href="/about">About</Link>
-          <Link href="/contact">Contact</Link>
-          {isLoggedIn && <Link href="/dashboard">Dashboard</Link>}
           {!isLoggedIn ? (
             <>
-              <Link href="/register">Register</Link>
-              <Link href="/login">Login</Link>
+              <Link href="/register" className="px-3 py-1 rounded hover:bg-gray-100">Register</Link>
+              <Link href="/login" className="px-3 py-1 rounded hover:bg-gray-100">Login</Link>
+            </>
+          ) : (
+            <button onClick={logout} className="px-3 py-1 rounded hover:bg-gray-100 flex items-center">
+              <LogOut className="h-4 w-4 mr-1" /> Logout
+            </button>
+          )}
+        </div>
+
+        {/* Mobile menu button */}
+        <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>Menu</button>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div className="md:hidden flex flex-col gap-2 p-4 bg-white shadow">
+          <Link href="/" onClick={() => setMobileOpen(false)}>Home</Link>
+          <Link href="/products" onClick={() => setMobileOpen(false)}>Products</Link>
+          <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
+          <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
+          {isLoggedIn && <Link href="/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</Link>}
+          <Link href="/favorites" onClick={() => setMobileOpen(false)}>Favorites</Link>
+          <Link href="/cart" onClick={() => setMobileOpen(false)}>Cart</Link>
+          {!isLoggedIn ? (
+            <>
+              <Link href="/register" onClick={() => setMobileOpen(false)}>Register</Link>
+              <Link href="/login" onClick={() => setMobileOpen(false)}>Login</Link>
             </>
           ) : (
             <button onClick={logout}>Logout</button>
