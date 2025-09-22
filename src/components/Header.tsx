@@ -49,7 +49,7 @@ export default function Header() {
           {session && <Link href="/dashboard">Dashboard</Link>}
         </nav>
 
-        {/* Actions */}
+        {/* Actions (Desktop) */}
         <div className="hidden md:flex gap-4 items-center">
           {/* Favorites */}
           <Link href="/favorites" className="relative flex items-center">
@@ -87,8 +87,58 @@ export default function Header() {
         </div>
 
         {/* Mobile menu button */}
-        <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>Menu</button>
+        <button className="md:hidden px-3 py-2 rounded border" onClick={() => setMobileOpen(!mobileOpen)}>
+          {mobileOpen ? "Close" : "Menu"}
+        </button>
       </div>
+
+      {/* Mobile Navigation */}
+      {mobileOpen && (
+        <div className="md:hidden bg-white shadow-lg border-t px-4 py-3 space-y-3 space-x-5 text-center">
+          <Link href="/" onClick={() => setMobileOpen(false)}>Home</Link>
+          <Link href="/products" onClick={() => setMobileOpen(false)}>Products</Link>
+          <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
+          <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
+          {session && <Link href="/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</Link>}
+
+          <div className="flex gap-4 items-center pt-3 border-t justify-center">
+            <Link href="/favorites" className="relative flex items-center" onClick={() => setMobileOpen(false)}>
+              <Heart className="h-5 w-5 mr-1" />
+              {favoritesCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full px-2 py-0.5 font-bold">
+                  {favoritesCount}
+                </span>
+              )}
+            </Link>
+
+            <Link href="/orders" className="relative flex items-center" onClick={() => setMobileOpen(false)}>
+              <ShoppingCart className="h-5 w-5 mr-1" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full px-2 py-0.5 font-bold">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          </div>
+
+          {!session ? (
+            <div className="flex gap-2 pt-3 border-t">
+              <Link href="/register" className="flex-1 text-center px-3 py-2 rounded bg-gray-100" onClick={() => setMobileOpen(false)}>Register</Link>
+              <Link href="/login" className="flex-1 text-center px-3 py-2 rounded bg-gray-100" onClick={() => setMobileOpen(false)}>Login</Link>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                setMobileOpen(false);
+                signOut({ callbackUrl: "/" });
+              }}
+              className="w-full text-center px-3 py-2 rounded bg-gray-100 mt-3"
+            >
+              Logout
+            </button>
+          )}
+        </div>
+      )}
     </header>
   );
 }

@@ -1,4 +1,4 @@
-// File: your-project/pages/favorites.tsx
+
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
