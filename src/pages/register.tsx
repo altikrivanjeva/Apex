@@ -12,6 +12,16 @@ export default function Register() {
     e.preventDefault();
     setError('');
 
+    if (username.length < 4) {
+      setError('Username must be at least 4 characters long.');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
