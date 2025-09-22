@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { useAuth } from '../context/AuthContext';
-import Header from '@/components/Header';
-import ShopProductsCRUD from '@/components/ShopProductsCRUD';
+// pages/dashboard.tsx
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useSession, signIn } from "next-auth/react";
+import Header from "@/components/Header";
+import ShopProductsCRUD from "@/components/ShopProductsCRUD";
 
 interface User {
   _id: string;
@@ -28,45 +29,46 @@ interface ContactMessage {
   createdAt: string;
 }
 
-type ActiveTab = 'users' | 'shop-products' | 'contact-messages' | 'orders';
+type ActiveTab = "users" | "shop-products" | "contact-messages" | "orders";
 
 export default function Dashboard() {
   const [users, setUsers] = useState<User[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
   const [editUserId, setEditUserId] = useState<string | null>(null);
-  const [newUsername, setNewUsername] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<ActiveTab>('users');
-  const { isLoggedIn } = useAuth();
+  const [newUsername, setNewUsername] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("users");
+
+  const { data: session, status } = useSession(); // NextAuth session
   const router = useRouter();
 
-  // Redirect to login if not logged in
+  // Redirect to login if not authenticated
   useEffect(() => {
-    if (!isLoggedIn) router.replace('/login');
-  }, [isLoggedIn, router]);
+    if (status === "unauthenticated") {
+      router.replace("/login");
+    }
+  }, [status, router]);
 
-  // Fetch all users
+  // Fetch functions
   const fetchUsers = async () => {
-    const res = await fetch('/api/users');
+    const res = await fetch("/api/users");
     if (res.ok) {
       const data = await res.json();
       setUsers(data.users);
     }
   };
 
-  // Fetch all orders
   const fetchOrders = async () => {
-    const res = await fetch('/api/orders');
+    const res = await fetch("/api/orders");
     if (res.ok) {
       const data = await res.json();
       setOrders(data);
     }
   };
 
-  // Fetch contact messages
   const fetchContactMessages = async () => {
-    const res = await fetch('/api/contact');
+    const res = await fetch("/api/contact");
     if (res.ok) {
       const data = await res.json();
       setContactMessages(data);
@@ -74,92 +76,132 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (session) {
       fetchUsers();
       fetchOrders();
       fetchContactMessages();
     }
-  }, [isLoggedIn]);
+  }, [session]);
 
   // Update user
   const handleUpdate = async (userId: string) => {
     if (!newUsername || !newPassword) return;
-    await fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'update', userId, newUsername, newPassword }),
+    await fetch("/api/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "update", userId, newUsername, newPassword }),
     });
     setEditUserId(null);
-    setNewUsername('');
-    setNewPassword('');
+    setNewUsername("");
+    setNewPassword("");
     fetchUsers();
   };
 
   // Delete user
   const handleDelete = async (userId: string) => {
-    await fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'delete', userId }),
+    await fetch("/api/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "delete", userId }),
     });
     fetchUsers();
   };
 
+  // Loading state
+  if (status === "loading") return <p className="text-center mt-10">Loading...</p>;
+
+  // Not logged in (show Google/Facebook login)
+  if (!session) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-2xl mb-4">Please log in</h1>
+
+        <button
+          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          className="mb-4 px-6 py-3 rounded-lg bg-red-500 text-white font-medium"
+        >
+          Login with Google
+        </button>
+
+        <button
+          onClick={() => signIn("facebook", { callbackUrl: "/dashboard" })}
+          className="px-6 py-3 rounded-lg font-medium"
+          style={{
+            backgroundColor: "#1877F2",
+            color: "white",
+            backgroundImage:
+              "url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJ3aGl0ZSIgdmlld0JveD0iMCAwIDM2IDM2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0yMi4wMTEgMThsLjAwMS01LjI5NmgzLjYzNmwtLjQ4OS0zLjYzN2gtMy4xNDN2LTItMS45MzVjMC0uNDI1LjExMi0uNzE1LjcwMi0uNzE1aDEuNTIxdjIuNjI3aC0xLjAwNWMtLjk1OCAwLTEuMTkyLjQ1Ny0xLjE5MiAxLjE3MnYxLjQxOEgyMi4wMXYzLjYzN2gtMi40MTl2My42MzdIMjIuMDF6Ii8+PC9zdmc+')",
+            backgroundPosition: "12px 11px",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "18px 18px",
+          }}
+        >
+          Login with Facebook
+        </button>
+      </div>
+    );
+  }
+
+  // Dashboard UI
   return (
     <div>
       <Header />
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
-          <h1 className="text-3xl font-bold mb-6 text-center text-black">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-6 text-center text-black">
+            Admin Dashboard
+          </h1>
 
-          {/* Tab Navigation */}
+          {/* Tab navigation */}
           <div className="flex mb-6 border-b">
             <button
-              onClick={() => setActiveTab('users')}
+              onClick={() => setActiveTab("users")}
               className={`px-6 py-3 font-semibold transition-colors ${
-                activeTab === 'users'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                activeTab === "users"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               Menaxhimi i Përdoruesve
             </button>
             <button
-              onClick={() => setActiveTab('shop-products')}
+              onClick={() => setActiveTab("shop-products")}
               className={`px-6 py-3 font-semibold transition-colors ${
-                activeTab === 'shop-products'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                activeTab === "shop-products"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               Produktet e Dyqanit
             </button>
             <button
-              onClick={() => setActiveTab('contact-messages')}
+              onClick={() => setActiveTab("contact-messages")}
               className={`px-6 py-3 font-semibold transition-colors ${
-                activeTab === 'contact-messages'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                activeTab === "contact-messages"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               Mesazhet e Kontaktit
             </button>
             <button
-              onClick={() => setActiveTab('orders')}
+              onClick={() => setActiveTab("orders")}
               className={`px-6 py-3 font-semibold transition-colors ${
-                activeTab === 'orders'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                activeTab === "orders"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               Porositë
             </button>
           </div>
 
-          {/* Tab Content */}
-          {activeTab === 'users' && (
+          {/* Tab Content (unchanged) */}
+          {activeTab === "users" && (
             <div>
-              <h2 className="text-2xl font-bold mb-6 text-black">Menaxhimi i Përdoruesve</h2>
+              <h2 className="text-2xl font-bold mb-6 text-black">
+                Menaxhimi i Përdoruesve
+              </h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
@@ -171,7 +213,10 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     {users.map((u) => (
-                      <tr key={u._id} className="border-b hover:bg-gray-50 transition text-black">
+                      <tr
+                        key={u._id}
+                        className="border-b hover:bg-gray-50 transition text-black"
+                      >
                         <td className="p-3">
                           {editUserId === u._id ? (
                             <input
@@ -191,7 +236,7 @@ export default function Dashboard() {
                               className="border p-1 rounded w-full"
                             />
                           ) : (
-                            '••••••••'
+                            "••••••••"
                           )}
                         </td>
                         <td className="p-3 space-x-2">
@@ -225,7 +270,8 @@ export default function Dashboard() {
                     ))}
                     {users.length === 0 && (
                       <tr>
-                        <td colSpan={3} className="text-center p-4 text-gray-500">
+                        <td colSpan={
+                        3} className="text-center p-4 text-gray-500">
                           No users found.
                         </td>
                       </tr>
@@ -236,13 +282,13 @@ export default function Dashboard() {
             </div>
           )}
 
-          {activeTab === 'shop-products' && (
-            <ShopProductsCRUD />
-          )}
+          {activeTab === "shop-products" && <ShopProductsCRUD />}
 
-          {activeTab === 'contact-messages' && (
+          {activeTab === "contact-messages" && (
             <div>
-              <h2 className="text-2xl font-bold mb-6 text-black">Mesazhet e Kontaktit</h2>
+              <h2 className="text-2xl font-bold mb-6 text-black">
+                Mesazhet e Kontaktit
+              </h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
@@ -255,7 +301,10 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     {contactMessages.map((msg) => (
-                      <tr key={msg._id} className="border-b hover:bg-gray-50 transition text-black">
+                      <tr
+                        key={msg._id}
+                        className="border-b hover:bg-gray-50 transition text-black"
+                      >
                         <td className="p-3">{msg.name}</td>
                         <td className="p-3">{msg.email}</td>
                         <td className="p-3">{msg.message}</td>
@@ -275,7 +324,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          {activeTab === 'orders' && (
+          {activeTab === "orders" && (
             <div>
               <h2 className="text-2xl font-bold mb-6 text-black">Porositë</h2>
               <div className="overflow-x-auto">
@@ -292,7 +341,10 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     {orders.map((order) => (
-                      <tr key={order._id} className="border-b hover:bg-gray-50 transition text-black">
+                      <tr
+                        key={order._id}
+                        className="border-b hover:bg-gray-50 transition text-black"
+                      >
                         <td className="p-3">{order.name}</td>
                         <td className="p-3">{order.address}</td>
                         <td className="p-3">{order.phone}</td>

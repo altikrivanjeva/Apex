@@ -1,16 +1,17 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { destroyCookie } from 'nookies';
-import { useAuth } from '../context/AuthContext';
+import { useEffect } from "react";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import { destroyCookie } from "nookies";
+import { useAuth } from "../context/AuthContext";
 
 export default function Logout() {
   const router = useRouter();
   const { setIsLoggedIn } = useAuth();
 
   useEffect(() => {
-    destroyCookie(null, 'token', { path: '/' });
+    destroyCookie(null, "token", { path: "/" });
     setIsLoggedIn(false);
-    router.replace('//');
+    signOut({ callbackUrl: "/" });
   }, [router, setIsLoggedIn]);
 
   return (

@@ -1,22 +1,20 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import { LogOut, Heart, ShoppingCart } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { Heart, ShoppingCart } from "lucide-react";
 import logo1 from "../assets/logo1.png";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuth();
+  const { data: session } = useSession();
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     const updateFavorites = () => {
-      if (typeof window !== "undefined") {
-        const favs = JSON.parse(localStorage.getItem("apex_favorites") || "[]");
-        setFavoritesCount(favs.length);
-      }
+      const favs = JSON.parse(localStorage.getItem("apex_favorites") || "[]");
+      setFavoritesCount(favs.length);
     };
     updateFavorites();
     window.addEventListener("favorites-updated", updateFavorites);
@@ -25,10 +23,8 @@ export default function Header() {
 
   useEffect(() => {
     const updateCart = () => {
-      if (typeof window !== "undefined") {
-        const cart = JSON.parse(localStorage.getItem("apex_cart") || "[]");
-        setCartCount(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
-      }
+      const cart = JSON.parse(localStorage.getItem("apex_cart") || "[]");
+      setCartCount(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
     };
     updateCart();
     window.addEventListener("cart-updated", updateCart);
@@ -50,7 +46,7 @@ export default function Header() {
           <Link href="/products">Products</Link>
           <Link href="/about">About</Link>
           <Link href="/contact">Contact</Link>
-          {isLoggedIn && <Link href="/dashboard">Dashboard</Link>}
+          {session && <Link href="/dashboard">Dashboard</Link>}
         </nav>
 
         {/* Actions */}
@@ -75,42 +71,24 @@ export default function Header() {
             )}
           </Link>
 
-          {!isLoggedIn ? (
+          {!session ? (
             <>
               <Link href="/register" className="px-3 py-1 rounded hover:bg-gray-100">Register</Link>
               <Link href="/login" className="px-3 py-1 rounded hover:bg-gray-100">Login</Link>
             </>
           ) : (
-           
-            <Link href="/logout" className="px-3 py-1 rounded hover:bg-gray-100">Logout</Link>
-            
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="px-3 py-1 rounded hover:bg-gray-100"
+            >
+              Logout
+            </button>
           )}
         </div>
 
         {/* Mobile menu button */}
         <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>Menu</button>
       </div>
-
-      {/* Mobile Menu */}
-      {mobileOpen && (
-        <div className="md:hidden flex flex-col gap-2 p-4 bg-white shadow">
-          <Link href="/" onClick={() => setMobileOpen(false)}>Home</Link>
-          <Link href="/products" onClick={() => setMobileOpen(false)}>Products</Link>
-          <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
-          <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
-          {isLoggedIn && <Link href="/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</Link>}
-          <Link href="/favorites" onClick={() => setMobileOpen(false)}>Favorites</Link>
-          <Link href="/cart" onClick={() => setMobileOpen(false)}>Cart</Link>
-          {!isLoggedIn ? (
-            <>
-              <Link href="/register" onClick={() => setMobileOpen(false)}>Register</Link>
-              <Link href="/login" onClick={() => setMobileOpen(false)}>Login</Link>
-            </>
-          ) : (
-            <button onClick={logout}>Logout</button>
-          )}
-        </div>
-      )}
     </header>
   );
 }
