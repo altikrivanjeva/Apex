@@ -1,10 +1,12 @@
 // This file renders the Home page from home.tsx
+// Importimi i komponentëve kryesorë dhe librarive të nevojshme
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Link from 'next/link';
 import { useEffect } from "react";
 
 export default function Home() {
+  // useEffect përdoret për të integruar Tawk.to live chat widget vetëm në browser
   useEffect(() => {
     if (typeof window !== "undefined") {
       var Tawk_API = Tawk_API || {};
@@ -20,7 +22,7 @@ export default function Home() {
     }
   }, []);
 
-  // Shto këtë funksion për të shtuar në favorite
+  // Funksion për të shtuar një produkt në favorites (ruan në localStorage)
   const addToFavorites = (productId: number) => {
     let favs = [];
     if (typeof window !== "undefined") {
@@ -33,6 +35,7 @@ export default function Home() {
     }
   };
 
+  // Funksion për të shtuar një produkt në cart (ruan në localStorage)
   const addToCart = (product: any) => {
     let cart = [];
     if (typeof window !== "undefined") {
@@ -50,16 +53,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f5f5f5]">
-      {/* Google Fonts import for Montserrat and Open Sans */}
+      {/* Importimi i Google Fonts për Montserrat dhe Open Sans */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css?family=Montserrat:800,700,400&display=swap');
         @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,500,600&display=swap');
       `}</style>
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center">
-        {/* Hero Section */}
+        {/* Seksioni Hero - prezantimi kryesor i faqes */}
         <section className="w-full flex flex-col md:flex-row items-center justify-center px-4 py-16 max-w-7xl mx-auto">
-          {/* Left: Text */}
+          {/* Ana e majtë: Teksti prezantues */}
           <div className="md:w-1/2 w-full flex flex-col justify-center items-start px-2 md:px-8">
             <span
               className="text-base font-semibold italic text-gray-500 mb-2"
@@ -69,6 +72,7 @@ export default function Home() {
                 fontStyle: 'italic',
               }}
             >
+              {/* Instagram handle */}
               INSTAGRAM: <span className="font-bold text-gray-700 italic" style={{ fontFamily: 'Montserrat, Arial, Helvetica, sans-serif', fontStyle: 'italic' }}>@APEXSUPPLEMENTS</span>
             </span>
             <h1
@@ -88,9 +92,11 @@ export default function Home() {
                 fontWeight: 400,
               }}
             >
+              {/* Përshkrimi i kompanisë */}
               Apex is a protein shop located in Kosovo and operating also in Albania. We offer nutritional supplements for all athletes. Our company aims for high quality and supports athletes. Apex has exclusivity for the best brands in the Kosovo and Albanian market.
             </p>
             <div className="flex gap-4">
+              {/* Buton që të çon te seksioni "ON SALE" */}
               <button
                 className="px-5 py-2 bg-white text-black font-extrabold italic rounded-none shadow hover:bg-gray-100 border border-black transition text-base uppercase"
                 style={{
@@ -111,14 +117,14 @@ export default function Home() {
               </button>
             </div>
           </div>
-          {/* Right: Product Image */}
+          {/* Ana e djathtë: Imazhi i produktit dhe badge */}
           <div className="md:w-1/2 w-full flex justify-center items-center mt-12 md:mt-0 relative">
             <img
               src="https://vitafit-ks.com/wp-content/webp-express/webp-images/uploads/2025/02/Untitled-2.png.webp"
               alt="Apex Top Seller"
               className="w-[28rem] h-[28rem] object-contain drop-shadow-xl"
             />
-            {/* Top Seller Badge */}
+            {/* Badge për Top Seller */}
             <div className="absolute top-6 left-6">
               <span
                 className="bg-yellow-400 text-red-700 font-extrabold px-4 py-2 rounded-full shadow-lg border-2 border-yellow-600 text-lg uppercase"
@@ -133,7 +139,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        {/* Energy Banner Section */}
+        {/* Seksioni i energjisë - promovim për C4 */}
         <section className="w-full flex flex-col md:flex-row items-center justify-center py-12 px-4"
           style={{
             background: 'linear-gradient(120deg, #ff4d00 0%, #ff7c1c 100%)',
@@ -141,7 +147,7 @@ export default function Home() {
             overflow: 'hidden',
           }}
         >
-          {/* Left: Product Image */}
+          {/* Ana e majtë: Imazhe të produkteve C4 */}
           <div className="md:w-1/2 w-full flex justify-center items-center mb-8 md:mb-0 gap-4">
             <img
               src="https://www.preworkout.org/wp-content/uploads/2022/05/C4-Preworkout-720x760.jpg"
@@ -156,7 +162,7 @@ export default function Home() {
               style={{ background: 'transparent' }}
             />
           </div>
-          {/* Right: Text */}
+          {/* Ana e djathtë: Teksti promovues */}
           <div className="md:w-1/2 w-full flex flex-col items-center md:items-start justify-center text-center md:text-left">
             <h2
               className="text-4xl md:text-5xl font-extrabold uppercase text-white mb-6"
@@ -187,7 +193,7 @@ export default function Home() {
             </span>
           </div>
         </section>
-        {/* Products Section */}
+        {/* Seksioni i produkteve në ofertë (Weekly Deals) */}
         <section
           id="weekly-deals"
           className="w-full max-w-7xl mx-auto px-4 py-16"
@@ -202,6 +208,7 @@ export default function Home() {
             Weekly Deals!!
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 mb-8">
+            {/* Kartat e produkteve me buton Add to Cart */}
             <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100">
               <img
                 src="https://a1protein.com/wp-content/uploads/2021/12/KL-Gold-Whey-Protein-2-kg.jpg"
@@ -225,6 +232,7 @@ export default function Home() {
               >
                 €39.99
               </div>
+              {/* Buton për të shtuar produktin në cart */}
               <button
                 className="px-5 py-2 bg-black text-white font-extrabold italic rounded-none shadow hover:bg-blue-900 transition text-base uppercase"
                 style={{
@@ -314,6 +322,7 @@ export default function Home() {
               </button>
             </div>
           </div>
+          {/* Buton për të parë të gjitha produktet */}
           <div className="flex justify-center">
             <a
               href="/products"
@@ -331,7 +340,7 @@ export default function Home() {
             </a>
           </div>
         </section>
-        {/* Simple navigation links as text, centered and spaced, now in black */}
+        {/* Lidhje të shpejta për faqe të tjera të rëndësishme */}
         <section className="w-full max-w-3xl mx-auto my-24 flex flex-col gap-16 items-center">
           <Link
             href="/why-choose-us"
@@ -355,7 +364,7 @@ export default function Home() {
             FITNESS TIPS
           </Link>
         </section>
-        {/* Final Call to Action Section */}
+        {/* Thirrje për veprim në fund të faqes */}
         <section className="w-full py-16 flex flex-col items-center justify-center bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500">
           <h2
             className="text-3xl md:text-4xl font-extrabold uppercase text-white mb-8 text-center"
