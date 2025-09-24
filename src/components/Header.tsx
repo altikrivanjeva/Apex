@@ -40,7 +40,7 @@ export default function Header() {
           <span className="font-bold text-xl">APEX</span>
         </Link>
 
-       
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-6 items-center">
           <Link href="/">Home</Link>
           <Link href="/products">Products</Link>
@@ -49,6 +49,7 @@ export default function Header() {
           {session && <Link href="/dashboard">Dashboard</Link>}
         </nav>
 
+        {/* Actions (Desktop) */}
         <div className="hidden md:flex gap-4 items-center">
           {/* Favorites */}
           <Link href="/favorites" className="relative flex items-center">
@@ -60,7 +61,7 @@ export default function Header() {
             )}
           </Link>
 
-          
+          {/* Cart */}
           <Link href="/orders" className="relative flex items-center">
             <ShoppingCart className="h-5 w-5 mr-1" />
             {cartCount > 0 && (
@@ -85,13 +86,13 @@ export default function Header() {
           )}
         </div>
 
-        
+        {/* Mobile menu button */}
         <button className="md:hidden px-3 py-2 rounded border" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? "Close" : "Menu"}
         </button>
       </div>
 
-      
+      {/* Mobile Navigation */}
       {mobileOpen && (
         <div className="md:hidden bg-white shadow-lg border-t px-4 py-3 space-y-3 space-x-5 text-center">
           <Link href="/" onClick={() => setMobileOpen(false)}>Home</Link>

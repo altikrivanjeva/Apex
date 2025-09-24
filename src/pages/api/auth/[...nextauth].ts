@@ -2,7 +2,26 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
+import { compare } from "bcryptjs";
+import { JWT } from "next-auth/jwt";
+import { Session, User, DefaultSession } from "next-auth"; // Import DefaultSession
+
+// Extend the JWT type to include a 'role' property
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: string;
+  }
+}
+
+// Extend the Session type to include a 'role' property on the user
+declare module "next-auth" {
+  interface Session {
+    user: {
+      role?: string;
+    } & DefaultSession["user"]; // Use DefaultSession to avoid circular reference
+  }
+}
 
 const uri = process.env.MONGODB_URI!;
 const dbName = process.env.MONGODB_DB!;
@@ -29,6 +48,7 @@ export const authOptions = {
         const db = client.db(dbName);
         const user = await db.collection("users").findOne({ username: credentials?.username });
         if (user && user.password === credentials?.password) {
+          // You should use password hashing here for security!
           return { id: user._id.toString(), name: user.username, role: user.role || "user" };
         }
         return null;
@@ -47,12 +67,16 @@ export const authOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) token.role = (user as any).role || "user";
+    async jwt({ token, user }: { token: JWT; user?: User }) {
+      if (user) {
+        token.role = (user as any).role || "user";
+      }
       return token;
     },
-    async session({ session, token }) {
-      session.user.role = token.role;
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (token) {
+        session.user.role = token.role;
+      }
       return session;
     },
   },
