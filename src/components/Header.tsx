@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -26,8 +24,7 @@ export default function Header() {
   useEffect(() => {
     const updateCart = () => {
       const cart = JSON.parse(localStorage.getItem("apex_cart") || "[]");
-      // Rregullimi: Specifikimi i llojit të 'acc' si 'number'
-      setCartCount(cart.reduce((acc: number, item: any) => acc + (item.quantity || 1), 0));
+      setCartCount(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
     };
     updateCart();
     window.addEventListener("cart-updated", updateCart);
@@ -37,10 +34,13 @@ export default function Header() {
   return (
     <header className="w-full shadow sticky top-0 z-50 bg-white/90 backdrop-blur text-black">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image src={logo1} alt="Logo" className="h-10 w-auto" />
           <span className="font-bold text-xl">APEX</span>
         </Link>
+
+       
         <nav className="hidden md:flex gap-6 items-center">
           <Link href="/">Home</Link>
           <Link href="/products">Products</Link>
@@ -48,7 +48,9 @@ export default function Header() {
           <Link href="/contact">Contact</Link>
           {session && <Link href="/dashboard">Dashboard</Link>}
         </nav>
+
         <div className="hidden md:flex gap-4 items-center">
+          {/* Favorites */}
           <Link href="/favorites" className="relative flex items-center">
             <Heart className="h-5 w-5 mr-1" />
             {favoritesCount > 0 && (
@@ -57,6 +59,8 @@ export default function Header() {
               </span>
             )}
           </Link>
+
+          
           <Link href="/orders" className="relative flex items-center">
             <ShoppingCart className="h-5 w-5 mr-1" />
             {cartCount > 0 && (
@@ -65,6 +69,7 @@ export default function Header() {
               </span>
             )}
           </Link>
+
           {!session ? (
             <>
               <Link href="/register" className="px-3 py-1 rounded hover:bg-gray-100">Register</Link>
@@ -79,10 +84,14 @@ export default function Header() {
             </button>
           )}
         </div>
+
+        
         <button className="md:hidden px-3 py-2 rounded border" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? "Close" : "Menu"}
         </button>
       </div>
+
+      
       {mobileOpen && (
         <div className="md:hidden bg-white shadow-lg border-t px-4 py-3 space-y-3 space-x-5 text-center">
           <Link href="/" onClick={() => setMobileOpen(false)}>Home</Link>
@@ -90,6 +99,7 @@ export default function Header() {
           <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
           <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
           {session && <Link href="/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</Link>}
+
           <div className="flex gap-4 items-center pt-3 border-t justify-center">
             <Link href="/favorites" className="relative flex items-center" onClick={() => setMobileOpen(false)}>
               <Heart className="h-5 w-5 mr-1" />
@@ -99,6 +109,7 @@ export default function Header() {
                 </span>
               )}
             </Link>
+
             <Link href="/orders" className="relative flex items-center" onClick={() => setMobileOpen(false)}>
               <ShoppingCart className="h-5 w-5 mr-1" />
               {cartCount > 0 && (
@@ -108,6 +119,7 @@ export default function Header() {
               )}
             </Link>
           </div>
+
           {!session ? (
             <div className="flex gap-2 pt-3 border-t">
               <Link href="/register" className="flex-1 text-center px-3 py-2 rounded bg-gray-100" onClick={() => setMobileOpen(false)}>Register</Link>

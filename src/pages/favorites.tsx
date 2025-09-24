@@ -6,53 +6,25 @@ import { Heart } from 'lucide-react';
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
 const fontOpenSans = { fontFamily: 'Open Sans, Arial, Helvetica, sans-serif' };
 
-// Definoj tipin e produktit
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  price: string;
-  img: string;
-}
-
 export default function Favorites() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState([]);
   const [favorites, setFavorites] = useState<number[]>([]);
-  const [cart, setCart] = useState<any[]>([]);
+  const [cart, setCart] = useState([]);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      try {
-        const favs = localStorage.getItem('apex_favorites');
-        if (favs) setFavorites(JSON.parse(favs));
-
-        const storedCart = localStorage.getItem('apex_cart');
-        if (storedCart) setCart(JSON.parse(storedCart));
-      } catch (error) {
-        console.error("Failed to parse localStorage data", error);
-        setFavorites([]);
-        setCart([]);
-      }
+      const fav = localStorage.getItem('apex_favorites');
+      if (fav) setFavorites(JSON.parse(fav));
+      const stored = localStorage.getItem('apex_cart');
+      if (stored) setCart(JSON.parse(stored));
     }
-
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch('/api/shop-products');
-        if (!res.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await res.json();
-        setProducts(data);
-      } catch (error) {
-        console.error("Could not fetch products", error);
-      }
-    };
-
-    fetchProducts();
+    fetch('/api/shop-products')
+      .then(res => res.json())
+      .then(data => setProducts(data));
   }, []);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: typeof products[0]) => {
     const exists = cart.find((p) => p.id === product.id);
     let newCart;
     if (exists) {
@@ -84,7 +56,7 @@ export default function Favorites() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #f5f5f5 0%, #eaf0fa 100%)' }}>
-      <Header cartCount={cart.reduce((acc, item) => acc + (item.quantity || 0), 0)} favoritesCount={favorites.length} />
+      <Header cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)} favoritesCount={favorites.length} />
       <main className="flex-1 flex flex-col items-center py-16">
         <section className="w-full max-w-5xl mx-auto mb-12 px-4 py-10 bg-gradient-to-r from-pink-100 via-blue-50 to-blue-100 rounded-2xl shadow-lg flex flex-col items-center">
           <h1 className="text-4xl font-extrabold uppercase text-pink-600 mb-4 text-center" style={fontMontserrat}>
