@@ -157,7 +157,7 @@ export default function Orders() {
                 <option value="card">Card</option>
               </select>
             </div>
-          
+            {/* Card fields */}
             {form.payment === 'card' && (
               <div className="bg-blue-50 rounded-xl p-4 flex flex-col gap-3 border border-blue-200 shadow-inner animate-fade-in">
                 <div className="flex items-center gap-2 mb-2">
