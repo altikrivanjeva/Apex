@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Heart } from 'lucide-react';
 import { ShopProduct } from '../models/ShopProduct';
-import { useSession } from "next-auth/react";
 
 // Definimi i font-eve për stilizim
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
@@ -23,11 +22,6 @@ type ProductsProps = {
 
 // Komponenti kryesor për faqen e produkteve
 export default function Products({ products = [] }: ProductsProps) {
-  // Merr të dhënat e sesionit nga NextAuth
-  const { data: session } = useSession();
-  const isLoggedIn = !!session;
-  const userId = session?.user?.id || "";
-
   // State për cart, favorites, mesazhe dhe kategorinë e zgjedhur
   const [cart, setCart] = useState<CartProduct[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -37,18 +31,13 @@ export default function Products({ products = [] }: ProductsProps) {
 
   // useEffect për të marrë të dhënat nga localStorage kur faqja ngarkohet
   useEffect(() => {
-    const fetchCart = async () => {
-      if (isLoggedIn) {
-        const res = await fetch(`/api/cart?userId=${userId}`);
-        const dbCart = await res.json();
-        setCart(dbCart);
-      } else {
-        const stored = localStorage.getItem('apex_cart');
-        if (stored) setCart(JSON.parse(stored));
-      }
-    };
-    fetchCart();
-  }, [isLoggedIn, userId]);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('apex_cart');
+      if (stored) setCart(JSON.parse(stored));
+      const fav = localStorage.getItem('apex_favorites');
+      if (fav) setFavorites(JSON.parse(fav));
+    }
+  }, []);
 
   // Funksion për të sinkronizuar cart-in me localStorage
   const syncCart = (newCart: CartProduct[]) => {
@@ -57,8 +46,6 @@ export default function Products({ products = [] }: ProductsProps) {
       localStorage.setItem('apex_cart', JSON.stringify(newCart));
       window.dispatchEvent(new CustomEvent('cart-updated'));
     }
-    // Ruaj edhe në databazë nëse përdoruesi është i loguar
-    if (isLoggedIn && userId) saveCartToDB(newCart, userId);
   };
 
   // Funksion për të sinkronizuar favorites me localStorage
@@ -302,7 +289,7 @@ export default function Products({ products = [] }: ProductsProps) {
   );
 }
 
-// Funksioni getStaticProps për SSG/ISR - merr produktet nga API në build dhe rifreshon çdo 60 sekonda
+// Funksioni getStaticProps për SSG/ISR - merr produktet nga API në build dhe rifreskon çdo 60 sekonda
 export async function getStaticProps() {
   // NDRYSHO URL-n sipas API-së tënde reale!
   const res = await fetch('http://localhost:3000/api/shop-products');
@@ -312,14 +299,3 @@ export async function getStaticProps() {
     revalidate: 60, // ISR: rifreskohet çdo 60 sekonda
   };
 }
-
-// Shto këtë funksion për të ruajtur cart-in në databazë
-const saveCartToDB = async (newCart: CartProduct[], userId: string) => {
-  // Kontrollo nëse userId ekziston për të shmangur gabimet
-  if (!userId) return;
-  await fetch('/api/cart', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, cart: newCart }),
-  });
-};

@@ -1,14 +1,9 @@
-// Kjo faqe është Dashboard-i i adminit për menaxhimin e përdoruesve, produkteve, porosive dhe mesazheve të kontaktit.
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSession, signIn } from "next-auth/react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import ShopProductsCRUD from "@/components/ShopProductsCRUD";
-import OrdersCRUD from '../components/OrdersCRUD'; // ose rruga e saktë sipas strukturës tënde
 
-// Definimi i tipeve për përdoruesit, porositë dhe mesazhet e kontaktit
 interface User {
   _id: string;
   username: string;
@@ -33,11 +28,9 @@ interface ContactMessage {
   createdAt: string;
 }
 
-// Tipi për tab-in aktiv në dashboard
 type ActiveTab = "users" | "shop-products" | "contact-messages" | "orders";
 
 export default function Dashboard() {
-  // State për të ruajtur të dhënat e përdoruesve, porosive, mesazheve dhe tab-in aktiv
   const [users, setUsers] = useState<User[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
@@ -46,29 +39,15 @@ export default function Dashboard() {
   const [newPassword, setNewPassword] = useState("");
   const [activeTab, setActiveTab] = useState<ActiveTab>("users");
 
-  // Shto state për formën e porosisë dhe editimin (pa fushën "payment" dhe "cart" për adminin)
-  const [orderForm, setOrderForm] = useState({
-    name: "",
-    address: "",
-    phone: "",
-  });
-  const [editOrderId, setEditOrderId] = useState<string | null>(null);
-
-  // Shto state për produktin e thjeshtë që admini mund të shtojë vetëm kur krijon porosi të re
-  const [simpleProduct, setSimpleProduct] = useState("");
-
-  // Merr sesionin e përdoruesit për autentikim
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Nëse përdoruesi nuk është i loguar, ridrejtohet te login
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");
     }
   }, [status, router]);
 
-  // Funksionet për të marrë të dhënat nga API-t
   const fetchUsers = async () => {
     const res = await fetch("/api/users");
     if (res.ok) {
@@ -93,7 +72,6 @@ export default function Dashboard() {
     }
   };
 
-  // Merr të dhënat kur admini është i loguar
   useEffect(() => {
     if (session) {
       fetchUsers();
@@ -102,7 +80,6 @@ export default function Dashboard() {
     }
   }, [session]);
 
-  // Funksion për të përditësuar të dhënat e një përdoruesi
   const handleUpdate = async (userId: string) => {
     if (!newUsername || !newPassword) return;
     await fetch("/api/auth", {
@@ -116,7 +93,6 @@ export default function Dashboard() {
     fetchUsers();
   };
 
-  // Funksion për të fshirë një përdorues
   const handleDelete = async (userId: string) => {
     await fetch("/api/auth", {
       method: "POST",
@@ -126,51 +102,8 @@ export default function Dashboard() {
     fetchUsers();
   };
 
-  // Funksion për të shtuar/ndryshuar porosi (pa ndryshuar cart dhe payment)
-  const handleOrderSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    let payload = { ...orderForm };
-    if (!editOrderId && simpleProduct.trim()) {
-      payload = {
-        ...payload,
-        cart: [{ name: simpleProduct, quantity: 1 }],
-      };
-    }
-    await fetch("/api/orders", {
-      method: editOrderId ? "PUT" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editOrderId ? { _id: editOrderId, ...orderForm } : payload),
-    });
-    setOrderForm({ name: "", address: "", phone: "" });
-    setEditOrderId(null);
-    setSimpleProduct("");
-    fetchOrders();
-  };
-
-  // Funksion për të fshirë porosi
-  const handleOrderDelete = async (orderId: string) => {
-    await fetch("/api/orders", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ _id: orderId }),
-    });
-    fetchOrders();
-  };
-
-  // Funksion për të mbushur formën për editim (vetëm fushat që admini mund të ndryshojë)
-  const handleOrderEdit = (order: Order) => {
-    setOrderForm({
-      name: order.name,
-      address: order.address,
-      phone: order.phone,
-    });
-    setEditOrderId(order._id);
-  };
-
-  // Nëse sesioni është duke u ngarkuar, shfaqet loading
   if (status === "loading") return <p className="text-center mt-10">Loading...</p>;
 
-  // Nëse nuk ka sesion, shfaqet forma për login
   if (!session) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
@@ -194,16 +127,14 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* Header-i i faqes */}
       <Header />
       <div className="min-h-screen bg-gray-50 p-4 md:p-8">
         <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-4 md:p-6">
-          {/* Titulli i dashboard-it */}
           <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center text-black">
             Admin Dashboard
           </h1>
 
-          {/* Navigimi me tab-a për menaxhimin e të dhënave */}
+          {/* Tab navigation */}
           <div className="flex overflow-x-auto mb-6 border-b">
             <button
               onClick={() => setActiveTab("users")}
@@ -247,13 +178,12 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* Përmbajtja e tab-it aktiv */}
+          {/* Content */}
           {activeTab === "users" && (
             <div className="overflow-x-auto">
               <h2 className="text-xl md:text-2xl font-bold mb-4 text-black">
                 Menaxhimi i Përdoruesve
               </h2>
-              {/* Tabela me përdoruesit dhe opsionet për edit/delete */}
               <table className="w-full min-w-[500px] text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-100">
@@ -328,10 +258,8 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Komponenti për menaxhimin e produkteve */}
           {activeTab === "shop-products" && <ShopProductsCRUD />}
 
-          {/* Tabela me mesazhet e kontaktit */}
           {activeTab === "contact-messages" && (
             <div className="overflow-x-auto">
               <h2 className="text-xl md:text-2xl font-bold mb-4 text-black">
@@ -367,73 +295,18 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Tabela me porositë */}
           {activeTab === "orders" && (
             <div className="overflow-x-auto">
               <h2 className="text-xl md:text-2xl font-bold mb-4 text-black">Porositë</h2>
-              {/* Forma për shtim/ndryshim të porosisë */}
-              <form onSubmit={handleOrderSubmit} className="mb-6 flex flex-col gap-2 bg-gray-50 p-4 rounded">
-                <input
-                  type="text"
-                  placeholder="Emri"
-                  value={orderForm.name}
-                  onChange={e => setOrderForm(f => ({ ...f, name: e.target.value }))}
-                  className="border p-2 rounded"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Adresa"
-                  value={orderForm.address}
-                  onChange={e => setOrderForm(f => ({ ...f, address: e.target.value }))}
-                  className="border p-2 rounded"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Telefoni"
-                  value={orderForm.phone}
-                  onChange={e => setOrderForm(f => ({ ...f, phone: e.target.value }))}
-                  className="border p-2 rounded"
-                  required
-                />
-                {/* Shfaq input për produkt vetëm kur shton porosi të re */}
-                {!editOrderId && (
-                  <input
-                    type="text"
-                    placeholder="Emri i produktit"
-                    value={simpleProduct}
-                    onChange={e => setSimpleProduct(e.target.value)}
-                    className="border p-2 rounded"
-                    required
-                  />
-                )}
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-                  {editOrderId ? "Ruaj Ndryshimet" : "Shto Porosi"}
-                </button>
-                {editOrderId && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditOrderId(null);
-                      setOrderForm({ name: "", address: "", phone: "" });
-                      setSimpleProduct("");
-                    }}
-                    className="text-gray-500 mt-2"
-                  >
-                    Anulo
-                  </button>
-                )}
-              </form>
               <table className="w-full min-w-[700px] text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-100">
                     <th className="p-3">Emri</th>
                     <th className="p-3">Adresa</th>
                     <th className="p-3">Telefoni</th>
+                    <th className="p-3">Pagesa</th>
                     <th className="p-3">Produktet</th>
                     <th className="p-3">Data</th>
-                    <th className="p-3">Veprime</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -442,6 +315,7 @@ export default function Dashboard() {
                       <td className="p-3">{order.name}</td>
                       <td className="p-3">{order.address}</td>
                       <td className="p-3">{order.phone}</td>
+                      <td className="p-3">{order.payment}</td>
                       <td className="p-3">
                         <ul>
                           {order.cart.map((item, idx) => (
@@ -452,20 +326,6 @@ export default function Dashboard() {
                         </ul>
                       </td>
                       <td className="p-3">{new Date(order.createdAt).toLocaleString()}</td>
-                      <td className="p-3">
-                        <button
-                          onClick={() => handleOrderEdit(order)}
-                          className="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleOrderDelete(order._id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded"
-                        >
-                          Delete
-                        </button>
-                      </td>
                     </tr>
                   ))}
                   {orders.length === 0 && (
@@ -481,7 +341,6 @@ export default function Dashboard() {
           )}
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
