@@ -1,4 +1,3 @@
-// Importimi i komponentëve kryesorë të faqes
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState, useEffect } from 'react';
@@ -6,30 +5,24 @@ import { useRouter } from 'next/router';
 import { Heart } from 'lucide-react';
 import { ShopProduct } from '../models/ShopProduct';
 
-// Definimi i font-eve për stilizim
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
 const fontOpenSans = { fontFamily: 'Open Sans, Arial, Helvetica, sans-serif' };
 
-// Tipi për produktet në cart
 interface CartProduct extends ShopProduct {
   quantity: number;
 }
 
-// Props që pranon komponenti Products nga getStaticProps
 type ProductsProps = {
   products: ShopProduct[];
 };
 
-// Komponenti kryesor për faqen e produkteve
 export default function Products({ products = [] }: ProductsProps) {
-  // State për cart, favorites, mesazhe dhe kategorinë e zgjedhur
   const [cart, setCart] = useState<CartProduct[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const router = useRouter();
 
-  // useEffect për të marrë të dhënat nga localStorage kur faqja ngarkohet
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('apex_cart');
@@ -39,7 +32,6 @@ export default function Products({ products = [] }: ProductsProps) {
     }
   }, []);
 
-  // Funksion për të sinkronizuar cart-in me localStorage
   const syncCart = (newCart: CartProduct[]) => {
     setCart(newCart);
     if (typeof window !== 'undefined') {
@@ -48,7 +40,6 @@ export default function Products({ products = [] }: ProductsProps) {
     }
   };
 
-  // Funksion për të sinkronizuar favorites me localStorage
   const syncFavorites = (newFavs: number[]) => {
     setFavorites(newFavs);
     if (typeof window !== 'undefined') {
@@ -57,7 +48,6 @@ export default function Products({ products = [] }: ProductsProps) {
     }
   };
 
-  // Shton një produkt në cart
   const addToCart = (product: ShopProduct) => {
     const exists = cart.find((p) => p.id === product.id);
     let newCart: CartProduct[];
@@ -73,13 +63,11 @@ export default function Products({ products = [] }: ProductsProps) {
     setTimeout(() => setMessage(null), 1500);
   };
 
-  // Heq një produkt nga cart
   const removeFromCart = (id: number) => {
     const newCart = cart.filter((p) => p.id !== id);
     syncCart(newCart);
   };
 
-  // Përditëson sasinë e një produkti në cart
   const updateQuantity = (id: number, qty: number) => {
     const newCart = cart.map((p) =>
       p.id === id ? { ...p, quantity: qty > 0 ? qty : 1 } : p
@@ -87,7 +75,6 @@ export default function Products({ products = [] }: ProductsProps) {
     syncCart(newCart);
   };
 
-  // Shton ose heq një produkt nga favorites
   const toggleFavorite = (id: number) => {
     let newFavs: number[];
     if (favorites.includes(id)) {
@@ -98,24 +85,23 @@ export default function Products({ products = [] }: ProductsProps) {
     syncFavorites(newFavs);
   };
 
-  // Llogarit kategoritë unike nga produktet
+  // Llogarit kategoritë unike
   const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))];
 
-  // Filtro produktet bazuar në kategorinë e zgjedhur
+  // Filtro produktet bazuar ne kategorine e zgjedhur
   const filteredProducts = selectedCategory === 'all'
     ? products
     : products.filter(product => product.category === selectedCategory);
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #f5f5f5 0%, #eaf0fa 100%)' }}>
-      {/* Importimi i font-eve globalisht */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css?family=Montserrat:800,700,400&display=swap');
         @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,500,600&display=swap');
       `}</style>
       <Header />
       <main className="flex-1 flex flex-col items-center py-16">
-        {/* Hero Banner për prezantimin e produkteve */}
+        {/* Hero Banner */}
         <section className="w-full max-w-5xl mx-auto mb-12 px-4 py-10 bg-gradient-to-r from-orange-100 via-blue-50 to-blue-100 rounded-2xl shadow-lg flex flex-col items-center">
           <h1 className="text-5xl font-extrabold uppercase text-blue-900 mb-4 text-center" style={fontMontserrat}>
             Apex Products
@@ -132,7 +118,7 @@ export default function Products({ products = [] }: ProductsProps) {
           </div>
         )}
 
-        {/* Seksioni i filtrimit të produkteve sipas kategorisë */}
+        {/* Filter Section */}
         <div className="w-full max-w-7xl px-4 flex justify-end mb-6">
           <div className="flex items-center gap-2">
             <span className="font-bold text-gray-700" style={fontMontserrat}>Filtro sipas kategorisë:</span>
@@ -151,7 +137,6 @@ export default function Products({ products = [] }: ProductsProps) {
           </div>
         </div>
 
-        {/* Seksioni i cart-it të përdoruesit */}
         <div className="w-full max-w-3xl mb-12">
           {cart.length > 0 && (
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-blue-100 mb-6">
@@ -186,7 +171,6 @@ export default function Products({ products = [] }: ProductsProps) {
                   </li>
                 ))}
               </ul>
-              {/* Llogaritja e totalit të cart-it */}
               <div className="mt-4 text-right font-bold text-blue-900" style={fontMontserrat}>
                 Total: {cart.reduce((acc, item) => {
                   let price = item.price;
@@ -197,7 +181,6 @@ export default function Products({ products = [] }: ProductsProps) {
                   return acc + item.quantity * (isNaN(priceNum) ? 0 : priceNum);
                 }, 0).toFixed(2)} €
               </div>
-              {/* Buton për të vazhduar në checkout */}
               <button
                 className="mt-4 px-6 py-2 bg-orange-500 text-white font-bold uppercase rounded shadow hover:bg-orange-600 transition"
                 style={fontMontserrat}
@@ -209,11 +192,10 @@ export default function Products({ products = [] }: ProductsProps) {
           )}
         </div>
 
-        {/* Seksioni i produkteve të filtruara */}
+        {/* Produktet e filtruara */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 w-full max-w-7xl px-4">
           {filteredProducts.map((product) => (
             <div key={product.id} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-blue-100 relative">
-              {/* Buton për të shtuar/hek nga favorites */}
               <button
                 onClick={() => toggleFavorite(product.id)}
                 className="absolute top-4 right-4 p-1 rounded-full bg-white shadow hover:bg-pink-100 transition"
@@ -225,7 +207,6 @@ export default function Products({ products = [] }: ProductsProps) {
                   fill={favorites.includes(product.id) ? '#ec4899' : 'none'}
                 />
               </button>
-              {/* Imazhi i produktit */}
               <img
                 src={product.img}
                 alt={product.name}
@@ -234,28 +215,24 @@ export default function Products({ products = [] }: ProductsProps) {
                   (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik02NCA0OEM4OC44MzY1IDQ4IDEwOCA2Ny4xNjM1IDEwOCA5MkMxMDggMTE2LjgzNiA4OC44MzY1IDEzNiA2NCAxMzZDMzkuMTYzNSAxMzYgMjAgMTE2LjgzNiAyMCA5MkMyMCA2Ny4xNjM1IDM5LjE2MzUgNDggNjQgNDhaIiBmaWxsPSIjRTVFN0VCIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzlDQTNBRiIgZm9udC1zaXplPSIxNnB4Ij5ObyBJbWFnZTwvdGV4dD4KICA8L3N2Zz4K';
                 }}
               />
-              {/* Emri i produktit */}
               <h2
                 className="text-xl font-extrabold uppercase text-blue-900 mb-2 text-center"
                 style={fontMontserrat}
               >
                 {product.name}
               </h2>
-              {/* Kategoria e produktit */}
               <div
                 className="text-base font-bold text-gray-500 mb-1"
                 style={fontOpenSans}
               >
                 {product.category}
               </div>
-              {/* Çmimi i produktit */}
               <div
                 className="text-lg font-bold text-orange-500 mb-2"
                 style={fontMontserrat}
               >
                 {product.price}
               </div>
-              {/* Buton për të shtuar produktin në cart */}
               <button
                 onClick={() => addToCart(product)}
                 className="px-6 py-2 bg-orange-500 text-white font-bold uppercase rounded shadow hover:bg-orange-600 transition mb-2"
@@ -267,7 +244,7 @@ export default function Products({ products = [] }: ProductsProps) {
           ))}
         </div>
 
-        {/* Mesazh nëse nuk ka produkte për kategorinë e zgjedhur */}
+        {/* Empty state */}
         {filteredProducts.length === 0 && (
           <div className="text-center py-20">
             <div className="text-2xl text-blue-900 font-bold mb-4" style={fontMontserrat}>
@@ -279,7 +256,6 @@ export default function Products({ products = [] }: ProductsProps) {
           </div>
         )}
         
-        {/* Thirrje për veprim në fund të faqes */}
         <div className="mt-16 text-center text-blue-900 text-xl font-bold" style={fontMontserrat}>
           Choose the supplement that fits you and start your journey to success!
         </div>
@@ -289,7 +265,7 @@ export default function Products({ products = [] }: ProductsProps) {
   );
 }
 
-// Funksioni getStaticProps për SSG/ISR - merr produktet nga API në build dhe rifreskon çdo 60 sekonda
+// KJO ËSHTË PJESA E RËNDËSISHME PËR SSG/ISR:
 export async function getStaticProps() {
   // NDRYSHO URL-n sipas API-së tënde reale!
   const res = await fetch('http://localhost:3000/api/shop-products');
