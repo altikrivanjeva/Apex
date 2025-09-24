@@ -369,7 +369,7 @@ export default function Dashboard() {
 
           {/* Tabela me porositë */}
           {activeTab === "orders" && (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto text-black">
               <h2 className="text-xl md:text-2xl font-bold mb-4 text-black">Porositë</h2>
               {/* Forma për shtim/ndryshim të porosisë */}
               <form onSubmit={handleOrderSubmit} className="mb-6 flex flex-col gap-2 bg-gray-50 p-4 rounded">
