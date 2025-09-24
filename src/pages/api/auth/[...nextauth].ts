@@ -2,9 +2,10 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
+import { compare } from "bcryptjs";
 import { JWT } from "next-auth/jwt";
-import { Session, User } from "next-auth";
+import { Session, User, DefaultSession } from "next-auth"; // Import DefaultSession
 
 // Extend the JWT type to include a 'role' property
 declare module "next-auth/jwt" {
@@ -18,7 +19,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       role?: string;
-    } & Session["user"];
+    } & DefaultSession["user"]; // Use DefaultSession to avoid circular reference
   }
 }
 
@@ -68,7 +69,6 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
-        // Here, we explicitly type user to get the role
         token.role = (user as any).role || "user";
       }
       return token;
