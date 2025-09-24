@@ -1,8 +1,19 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const fontMontserrat = { fontFamily: 'Montserrat, Arial, Helvetica, sans-serif' };
+
+// Define the type for a product in the cart
+interface CartItem {
+  id: number;
+  name: string;
+  img: string;
+  price: string | number;
+  quantity: number;
+}
 
 export default function Orders() {
   const [form, setForm] = useState({
@@ -15,14 +26,19 @@ export default function Orders() {
     cardCVV: '',
   });
   const [success, setSuccess] = useState(false);
-  const [cart, setCart] = useState<{ id: number; name: string; img: string; price: string; quantity: number }[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const updateCart = () => {
-        const stored = localStorage.getItem('apex_cart');
-        if (stored) setCart(JSON.parse(stored));
-        else setCart([]);
+        try {
+          const stored = localStorage.getItem('apex_cart');
+          if (stored) setCart(JSON.parse(stored));
+          else setCart([]);
+        } catch (error) {
+          console.error("Failed to parse cart from localStorage", error);
+          setCart([]);
+        }
       };
       updateCart();
       window.addEventListener('cart-updated', updateCart);
@@ -36,32 +52,55 @@ export default function Orders() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (cart.length === 0) {
+      alert("Your cart is empty. Please add some products to place an order.");
+      return;
+    }
+    
     const orderData = {
       ...form,
       cart,
       createdAt: new Date().toISOString(),
     };
-    await fetch('/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orderData),
-    });
-    setSuccess(true);
-    setForm({
-      name: '',
-      address: '',
-      phone: '',
-      payment: 'cash',
-      cardNumber: '',
-      cardExpiry: '',
-      cardCVV: '',
-    });
-    setCart([]);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('apex_cart');
-      window.dispatchEvent(new CustomEvent('cart-updated'));
+
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status}`);
+      }
+      
+      setSuccess(true);
+      setForm({
+        name: '',
+        address: '',
+        phone: '',
+        payment: 'cash',
+        cardNumber: '',
+        cardExpiry: '',
+        cardCVV: '',
+      });
+      setCart([]);
+      
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('apex_cart');
+        window.dispatchEvent(new CustomEvent('cart-updated'));
+      }
+      
+    } catch (error) {
+      console.error("Order submission failed:", error);
+      alert("Failed to place your order. Please try again.");
     }
   };
+
+  const total = cart.reduce((acc, item) => {
+    const price = typeof item.price === "string" ? parseFloat(item.price.replace('€', '').trim()) : item.price;
+    return acc + item.quantity * price;
+  }, 0);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50 via-blue-50 to-white text-blue-900">
@@ -71,7 +110,6 @@ export default function Orders() {
           <h1 className="text-3xl font-extrabold uppercase mb-2 text-blue-900 text-center tracking-wide" style={fontMontserrat}>
             Place Your Order
           </h1>
-          {/* Shfaq produktet në cart */}
           {cart.length > 0 ? (
             <div className="w-full mb-6">
               <h2 className="text-xl font-bold text-blue-900 mb-2" style={fontMontserrat}>Your Cart</h2>
@@ -84,26 +122,13 @@ export default function Orders() {
                       <span className="text-gray-600" style={fontMontserrat}>x{item.quantity}</span>
                     </div>
                     <span className="text-orange-500 font-bold" style={fontMontserrat}>
-                      {(
-                        item.quantity *
-                        Number(
-                          typeof item.price === "string"
-                            ? item.price.replace('€', '').trim()
-                            : item.price
-                        )
-                      ).toFixed(2)} €
+                      {(typeof item.price === "string" ? parseFloat(item.price.replace('€', '')) : item.price * item.quantity).toFixed(2)} €
                     </span>
                   </li>
                 ))}
               </ul>
               <div className="mt-2 text-right font-bold text-blue-900" style={fontMontserrat}>
-                Total: {cart.reduce((acc, item) => {
-                  let price = item.price;
-                  if (typeof price === "string") {
-                    price = price.replace('€', '').trim();
-                  }
-                  return acc + item.quantity * Number(price);
-                }, 0).toFixed(2)} €
+                Total: {total.toFixed(2)} €
               </div>
             </div>
           ) : (
@@ -246,6 +271,8 @@ export default function Orders() {
   );
 }
 
+// NOTE: This part is for demonstration and should be in a separate file if it's a different component.
+// The code below is not part of the `Orders` component but was included in your original snippet.
 export function ProductsPage() {
   const [cart, setCart] = useState([]);
 
@@ -254,12 +281,12 @@ export function ProductsPage() {
     if (stored) setCart(JSON.parse(stored));
   }, []);
 
-  const addToCart = (product) => {
+  const addToCart = (product: any) => {
     setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const existing = prev.find((item: any) => item.id === product.id);
       let updatedCart;
       if (existing) {
-        updatedCart = prev.map(item =>
+        updatedCart = prev.map((item: any) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
@@ -276,7 +303,7 @@ export function ProductsPage() {
       <div>
         <h2>CART</h2>
         <ul>
-          {cart.map(item => (
+          {cart.map((item: any) => (
             <li key={item.id}>
               {item.name} x{item.quantity}
             </li>
