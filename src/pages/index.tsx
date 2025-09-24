@@ -51,7 +51,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-[#f5f5f5]">
       {/* Google Fonts import for Montserrat and Open Sans */}
-      <style jsx global>{`
+      <style jsx global>{`  
         @import url('https://fonts.googleapis.com/css?family=Montserrat:800,700,400&display=swap');
         @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,500,600&display=swap');
       `}</style>
