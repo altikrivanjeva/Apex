@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShopProduct } from '../models/ShopProduct';
+import { ShopProduct } from '../models//models/ShopPorduct';
 
 export default function ShopProductsCRUD() {
   const [products, setProducts] = useState<ShopProduct[]>([]);
